@@ -9,3 +9,664 @@
 	exit;
 ?>
 Something is wrong with the XAMPP installation :-(
+html
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ສະບາຍໃຈ - ຊຸມຊົນຂາຍລົດ ແລະ ສິນຄ້າ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Phetsarath OT', 'Noto Sans Lao', system-ui, sans-serif;
+        }
+        body {
+            background: #f0f2f5;
+            padding-bottom: 80px;
+        }
+        .header {
+            background: linear-gradient(135deg, #2b7a4b 0%, #1e5a3a 100%);
+            color: white;
+            padding: 20px 16px;
+            border-radius: 0 0 24px 24px;
+        }
+        .header h1 { font-size: 28px; display: flex; align-items: center; gap: 8px; }
+        .header p { font-size: 14px; opacity: 0.9; margin-top: 6px; }
+        .user-info {
+            background: rgba(255,255,255,0.2);
+            border-radius: 40px;
+            padding: 6px 12px;
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        .user-info button {
+            background: none;
+            border: none;
+            color: white;
+            margin-left: 8px;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .search-box {
+            background: white;
+            margin: -20px 16px 16px;
+            padding: 8px 16px;
+            border-radius: 48px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .search-box input {
+            flex: 1;
+            border: none;
+            padding: 12px 0;
+            font-size: 16px;
+            outline: none;
+        }
+        .search-box button {
+            background: #2b7a4b;
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin: 16px;
+            background: white;
+            padding: 6px;
+            border-radius: 48px;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            background: #f0f2f5;
+            color: #555;
+        }
+        .tab.active {
+            background: #2b7a4b;
+            color: white;
+        }
+        .post-form, .login-form {
+            background: white;
+            margin: 16px;
+            padding: 20px;
+            border-radius: 28px;
+        }
+        .post-form h3, .login-form h3 { margin-bottom: 16px; color: #1e5a3a; }
+        .post-form input, .post-form textarea, .post-form select, .login-form input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 15px;
+        }
+        .post-form button, .login-form button {
+            background: #2b7a4b;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 32px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .image-preview { margin: 10px 0; text-align: center; }
+        .image-preview img { max-width: 100%; max-height: 150px; border-radius: 16px; }
+        .product-list { margin: 16px; display: flex; flex-direction: column; gap: 16px; }
+        .product-card {
+            background: white;
+            border-radius: 24px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .product-image {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            background: #f0f2f5;
+        }<?php
+    if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) {
+        $uri = 'https://';
+    } else {
+        $uri = 'http://';
+    }
+    $uri .= $_SERVER['HTTP_HOST'];
+    header('Location: '.$uri.'/dashboard/');
+    exit;
+?>
+Something is wrong with the XAMPP installation :-(
+        .product-title { font-size: 18px; font-weight: bold; }
+        .product-category {
+            display: inline-block;
+            background: #e9f5ef;
+            color: #2b7a4b;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin: 8px 0;
+        }
+        .product-price { font-size: 22px; font-weight: bold; color: #d9534f; margin: 6px 0; }
+        .product-desc { color: #666; margin: 8px 0; font-size: 14px; }
+        .product-contact {
+            background: #f0f7f3;
+            padding: 10px;
+            border-radius: 20px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #1e5a3a;
+        }
+        .action-buttons { display: flex; gap: 12px; margin: 12px 0 8px; flex-wrap: wrap; }
+        .buy-btn, .reserve-btn, .share-btn, .whatsapp-btn, .comment-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+            text-align: center;
+        }
+        .buy-btn { background: #d9534f; color: white; }
+        .reserve-btn { background: #f0ad4e; color: white; }
+        .share-btn { background: #3b5998; color: white; }
+        .whatsapp-btn { background: #25D366; color: white; }
+        .comment-btn { background: #17a2b8; color: white; }
+        .delete-btn {
+            background: #ffdddd;
+            border: none;
+            padding: 8px;
+            border-radius: 20px;
+            color: #c0392b;
+            cursor: pointer;
+            width: 100%;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        .comments-section {
+            margin-top: 16px;
+            border-top: 1px solid #eee;
+            padding-top: 12px;
+        }
+        .comment-item {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 16px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .comment-author { font-weight: bold; color: #2b7a4b; }
+        .comment-text { margin-top: 4px; }
+        .add-comment {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .add-comment input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            font-size: 13px;
+        }
+        .add-comment button {
+            background: #2b7a4b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 24px;
+            cursor: pointer;
+        }
+        .empty-msg { text-align: center; padding: 40px; color: #aaa; }
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 16px 20px;
+            border-top: 1px solid #eee;
+        }
+        .footer button {
+            background: none;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            color: #555;
+        }
+        .footer .active-footer { background: #2b7a4b; color: white; }
+        .hidden { display: none; }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            margin: 20px;
+            padding: 24px;
+            border-radius: 32px;
+            max-width: 400px;
+            width: 100%;
+        }
+        .modal-content h3 { margin-bottom: 16px; color: #1e5a3a; }
+        .modal-content input, .modal-content textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 15px;
+        }
+        .modal-content button {
+            width: 100%;
+            padding: 12px;
+            background: #2b7a4b;
+            color: white;
+            border: none;
+            border-radius: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .close-modal { background: #ccc !important; color: #333 !important; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>😊 ສະບາຍໃຈ</h1>
+    <p>ຊຸມຊົນຂາຍລົດ ແລະ ສິນຄ້າ — ໂພສຟຣີ (ອັບຮູບໄດ້)</p>
+    <div id="userInfo" class="user-info"></div>
+</div>
+
+<div class="search-box">
+    <input type="text" id="searchInput" placeholder="ຄົ້ນຫາສິນຄ້າ...">
+    <button id="searchBtn">🔍 ຄົ້ນຫາ</button>
+</div>
+
+<div class="tabs">
+    <div class="tab active" data-tab="buy">🛒 ຊື້ສິນຄ້າ</div>
+    <div class="tab" data-tab="sell">➕ ຂາຍສິນຄ້າ</div>
+</div>
+
+<div id="sellPanel" class="hidden">
+    <div class="post-form" id="sellForm">
+        <h3>📦 ລົງຂາຍສິນຄ້າ</h3>
+        <select id="category">
+            <option value="ລົດ">🚗 ລົດ</option>
+            <option value="ເບີໂທ">📱 ເບີໂທລະສັບ</option>
+            <option value="ສິນຄ້າທົ່ວໄປ">🛍️ ສິນຄ້າທົ່ວໄປ</option>
+        </select>
+        <input type="text" id="productName" placeholder="ຊື່ສິນຄ້າ">
+        <input type="text" id="price" placeholder="ລາຄາ (ກີບ)">
+        <textarea id="description" rows="2" placeholder="ລາຍລະອຽດ..."></textarea>
+        <input type="file" id="productImage" accept="image/*">
+        <div class="image-preview" id="imagePreview"></div>
+        <input type="text" id="phone" placeholder="ເບີໂທຕິດຕໍ່">
+        <input type="text" id="whatsapp" placeholder="ເບີ WhatsApp (ສຳລັບຕິດຕໍ່)">
+        <button id="publishBtn">✅ ລົງຂາຍ</button>
+    </div>
+    <div class="login-form hidden" id="loginRequired">
+        <h3>🔐 ກະລຸນາເຂົ້າສູ່ລະບົບ</h3>
+        <input type="text" id="loginUsername" placeholder="ຊື່ຜູ້ໃຊ້">
+        <input type="password" id="loginPassword" placeholder="ລະຫັດຜ່ານ">
+        <button id="doLoginBtn">ເຂົ້າສູ່ລະບົບ</button>
+        <button id="showRegisterBtn">ສະໝັກສະມາຊິກ</button>
+    </div>
+    <div class="login-form hidden" id="registerForm">
+        <h3>📝 ສະໝັກສະມາຊິກ</h3>
+        <input type="text" id="regUsername" placeholder="ຊື່ຜູ້ໃຊ້">
+        <input type="password" id="regPassword" placeholder="ລະຫັດຜ່ານ">
+        <input type="email" id="regEmail" placeholder="ອີເມວ">
+        <input type="text" id="regWhatsapp" placeholder="ເບີ WhatsApp">
+        <button id="doRegisterBtn">ສະໝັກ</button>
+        <button id="backToLoginBtn">ກັບໄປເຂົ້າສູ່ລະບົບ</button>
+    </div>
+</div>
+
+<div id="buyPanel">
+    <div id="productList" class="product-list"></div>
+</div>
+
+<div class="footer">
+    <button id="footerBuyBtn" class="active-footer">🛍️ ຊື້</button>
+    <button id="footerSellBtn">➕ ຂາຍ</button>
+</div>
+
+<script>
+    let users = [];
+    let currentUser = null;
+    let products = [];
+    let currentImageData = null;
+    let comments = {};
+
+    function loadData() {
+        const storedUsers = localStorage.getItem("sabaiJaiUsers");
+        if (storedUsers) users = JSON.parse(storedUsers);
+        else {
+            users = [];
+            saveUsers();
+        }
+        const storedProducts = localStorage.getItem("sabaiJaiProducts");
+        if (storedProducts) products = JSON.parse(storedProducts);
+        else {
+            products = [];
+            saveProducts();
+        }
+        const storedComments = localStorage.getItem("sabaiJaiComments");
+        if (storedComments) comments = JSON.parse(storedComments);
+        const loggedUser = localStorage.getItem("sabaiJaiCurrentUser");
+        if (loggedUser) currentUser = JSON.parse(loggedUser);
+        updateUserUI();
+        renderProducts();
+    }
+
+    function saveUsers() { localStorage.setItem("sabaiJaiUsers", JSON.stringify(users)); }
+    function saveProducts() { localStorage.setItem("sabaiJaiProducts", JSON.stringify(products)); }
+    function saveComments() { localStorage.setItem("sabaiJaiComments", JSON.stringify(comments)); }
+    function saveCurrentUser() { localStorage.setItem("sabaiJaiCurrentUser", JSON.stringify(currentUser)); }
+
+    function updateUserUI() {
+        const container = document.getElementById("userInfo");
+        if (currentUser) {
+            container.innerHTML = `👋 ${currentUser.username} <button id="logoutBtn">ອອກຈາກລະບົບ</button>`;
+            const logoutBtn = document.getElementById("logoutBtn");
+            if (logoutBtn) logoutBtn.onclick = () => {
+                currentUser = null;
+                localStorage.removeItem("sabaiJaiCurrentUser");
+                updateUserUI();
+                showBuyPanel();
+                alert("ອອກຈາກລະບົບແລ້ວ");
+            };
+        } else {
+            container.innerHTML = `🚫 ຍັງບໍ່ໄດ້ເຂົ້າສູ່ລະບົບ`;
+        }
+    }
+
+    function renderComments(productId) {
+        const productComments = comments[productId] || [];
+        if (productComments.length === 0) {
+            return `<div class="comments-section"><div class="comment-item">ຍັງບໍ່ມີຄຳເຫັນ</div>
+                <div class="add-comment"><input type="text" id="commentInput_${productId}" placeholder="ຂຽນຄຳເຫັນ..."><button onclick="addComment('${productId}')">ສົ່ງ</button></div></div>`;
+        }
+        return `
+            <div class="comments-section">
+                ${productComments.map(c => `<div class="comment-item"><div class="comment-author">${escapeHtml(c.author)}</div><div class="comment-text">${escapeHtml(c.text)}</div><small style="color:#999">${new Date(c.date).toLocaleString()}</small></div>`).join('')}
+                <div class="add-comment"><input type="text" id="commentInput_${productId}" placeholder="ຂຽນຄຳເຫັນ..."><button onclick="addComment('${productId}')">ສົ່ງ</button></div>
+            </div>
+        `;
+    }
+
+    window.addComment = function(productId) {
+        if (!currentUser) { alert("ກະລຸນາເຂົ້າສູ່ລະບົບກ່ອນຂຽນຄຳເຫັນ"); return; }
+        const input = document.getElementById(`commentInput_${productId}`);
+        const text = input.value.trim();
+        if (!text) return;
+        if (!comments[productId]) comments[productId] = [];
+        comments[productId].push({ id: Date.now()+"", author: currentUser.username, text: text, date: Date.now() });
+        saveComments();
+        input.value = "";
+        renderProducts();
+    };
+
+    let currentFilter = "";
+    function renderProducts() {
+        const container = document.getElementById("productList");
+        let filtered = products.filter(p => 
+            p.name.toLowerCase().includes(currentFilter.toLowerCase()) ||
+            p.category.toLowerCase().includes(currentFilter.toLowerCase()) ||
+            p.desc.toLowerCase().includes(currentFilter.toLowerCase())
+        );
+        filtered.sort((a,b) => b.date - a.date);
+
+        if (filtered.length === 0) {
+            container.innerHTML = '<div class="empty-msg">😢 ຍັງບໍ່ມີສິນຄ້າ</div>';
+            return;
+        }
+
+        container.innerHTML = filtered.map(p => `
+            <div class="product-card">
+                ${p.image ? `<img class="product-image" src="${p.image}" alt="ຮູບສິນຄ້າ">` : ''}
+                <div class="product-title">${escapeHtml(p.name)}</div>
+                <div class="product-category">${p.category}</div>
+                <div class="product-price">💰 ${p.price}</div>
+                <div class="product-desc">${escapeHtml(p.desc)}</div>
+                <div class="product-contact">📞 ຜູ້ຂາຍ: ${escapeHtml(p.phone)}</div>
+                <div class="action-buttons">
+                    <button class="buy-btn" data-id="${p.id}">🛒 ຊື້</button>
+                    <button class="reserve-btn" data-id="${p.id}">📅 ຈອງ</button>
+                    <button class="share-btn" data-id="${p.id}">🔗 ແບ່ງປັນ</button>
+                    <button class="whatsapp-btn" data-wa="${p.whatsapp || p.phone}">💬 ວອດແອບ</button>
+                    <button class="comment-btn" data-id="${p.id}">💬 ຄອມເມັ້ນ</button>
+                </div>
+                ${currentUser && String(p.userId) === String(currentUser.id) ? `<button class="delete-btn" data-id="${p.id}">❌ ລຶບໂພສ</button>` : ''}
+                <div id="comments-${p.id}">${renderComments(p.id)}</div>
+            </div>
+        `).join("");
+
+        document.querySelectorAll(".buy-btn").forEach(btn => { btn.onclick = () => showOrderModal(products.find(p => p.id === btn.dataset.id), "buy"); });
+        document.querySelectorAll(".reserve-btn").forEach(btn => { btn.onclick = () => showOrderModal(products.find(p => p.id === btn.dataset.id), "reserve"); });
+        document.querySelectorAll(".share-btn").forEach(btn => { btn.onclick = () => shareProduct(products.find(p => p.id === btn.dataset.id)); });
+        document.querySelectorAll(".whatsapp-btn").forEach(btn => {
+            btn.onclick = () => {
+                let wa = btn.getAttribute("data-wa");
+                wa = wa.replace(/[^0-9]/g, '');
+                if (wa) window.open(`https://wa.me/${wa}`, '_blank');
+                else alert("ຜູ້ຂາຍບໍ່ໄດ້ລະບຸເບີ WhatsApp");
+            };
+        });
+        document.querySelectorAll(".comment-btn").forEach(btn => {
+            btn.onclick = () => { const div = document.getElementById(`comments-${btn.dataset.id}`); if (div) div.scrollIntoView({ behavior: 'smooth' }); };
+        });
+        document.querySelectorAll(".delete-btn").forEach(btn => {
+            btn.onclick = () => {
+                if (confirm("ຕ້ອງການລຶບໂພສນີ້ແທ້ບໍ?")) {
+                    products = products.filter(p => p.id !== btn.dataset.id);
+                    saveProducts();
+                    renderProducts();
+                }
+            };
+        });
+    }
+
+    function shareProduct(product) {
+        const url = window.location.href;
+        if (navigator.share) navigator.share({ title: product.name, text: `${product.name} - ${product.price}` });
+        else prompt("ຄັດລອກລິ້ງ:", url);
+    }
+
+    function showOrderModal(product, type) {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3>${type === 'buy' ? '✅ ຢືນຢັນການຊື້' : '📅 ຢືນຢັນການຈອງ'}</h3>
+                <p><strong>ສິນຄ້າ:</strong> ${escapeHtml(product.name)}</p>
+                <p><strong>ລາຄາ:</strong> ${product.price}</p>
+                <input type="text" id="customerName" placeholder="ຊື່ຂອງທ່ານ">
+                <input type="tel" id="customerPhone" placeholder="ເບີໂທຂອງທ່ານ">
+                <input type="text" id="customerAddress" placeholder="ທີ່ຢູ່">
+                <button id="confirmBtn">ຕົກລົງ</button>
+                <button id="closeModalBtn" class="close-modal">ຍົກເລີກ</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        document.getElementById("confirmBtn").onclick = () => {
+            const name = document.getElementById("customerName").value.trim();
+            const phone = document.getElementById("customerPhone").value.trim();
+            const address = document.getElementById("customerAddress").value.trim();
+            if (!name || !phone) { alert("ກະລຸນາປ້ອນຊື່ ແລະ ເບີໂທ"); return; }
+            const wa = (product.whatsapp || product.phone).replace(/[^0-9]/g, '');
+            const msg = `${type === 'buy' ? 'ຊື້' : 'ຈອງ'}ສິນຄ້າ: ${product.name}\nລາຄາ: ${product.price}\nຊື່: ${name}\nເບີໂທ: ${phone}\nທີ່ຢູ່: ${address}`;
+            if (wa) window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`, '_blank');
+            alert("ສຳເລັດ! ຜູ້ຂາຍຈະຕິດຕໍ່ທ່ານທາງ WhatsApp");
+            modal.remove();
+        };
+        document.getElementById("closeModalBtn").onclick = () => modal.remove();
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+    }
+
+    document.getElementById("productImage")?.addEventListener("change", e => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = ev => {
+                currentImageData = ev.target.result;
+                document.getElementById("imagePreview").innerHTML = `<img src="${currentImageData}" alt="ຮູບສິນຄ້າ">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    function publishProduct() {
+        if (!currentUser) { alert("ກະລຸນາເຂົ້າສູ່ລະບົບກ່ອນລົງຂາຍ"); showSellPanel(); return; }
+        const category = document.getElementById("category").value;
+        const name = document.getElementById("productName").value.trim();
+        const price = document.getElementById("price").value.trim();
+        const desc = document.getElementById("description").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const whatsapp = document.getElementById("whatsapp").value.trim();
+        if (!name || !price || !phone) { alert("ກະລຸນາປ້ອນຊື່, ລາຄາ ແລະ ເບີໂທ"); return; }
+        const newProduct = {
+            id: Date.now() + "" + Math.random(),
+            userId: currentUser.id,
+            category, name, price,
+            desc: desc || "ບໍ່ມີລາຍລະອຽດ",
+            phone, whatsapp: whatsapp || phone,
+            image: currentImageData || "",
+            date: Date.now()
+        };
+        products.unshift(newProduct);
+        saveProducts();
+        renderProducts();
+        document.getElementById("productName").value = "";
+        document.getElementById("price").value = "";
+        document.getElementById("description").value = "";
+        document.getElementById("phone").value = "";
+        document.getElementById("whatsapp").value = "";
+        document.getElementById("productImage").value = "";
+        document.getElementById("imagePreview").innerHTML = "";
+        currentImageData = null;
+        showBuyPanel();
+        alert("✅ ລົງຂາຍສຳເລັດ");
+    }
+
+    function showLoginPanel() {
+        document.getElementById("loginRequired").classList.remove("hidden");
+        document.getElementById("registerForm").classList.add("hidden");
+        document.getElementById("sellForm").classList.add("hidden");
+    }
+    function showRegisterPanel() {
+        document.getElementById("loginRequired").classList.add("hidden");
+        document.getElementById("registerForm").classList.remove("hidden");
+        document.getElementById("sellForm").classList.add("hidden");
+    }
+    function showSellForm() {
+        if (!currentUser) { showLoginPanel(); return; }
+        document.getElementById("loginRequired").classList.add("hidden");
+        document.getElementById("registerForm").classList.add("hidden");
+        document.getElementById("sellForm").classList.remove("hidden");
+    }
+
+    document.getElementById("doLoginBtn")?.addEventListener("click", () => {
+        const user = document.getElementById("loginUsername").value.trim();
+        const pass = document.getElementById("loginPassword").value.trim();
+        const found = users.find(u => u.username === user && u.password === pass);
+        if (found) { currentUser = found; saveCurrentUser(); updateUserUI(); showSellForm(); showBuyPanel(); alert(`ສະບາຍດີ ${user}`); }
+        else alert("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ");
+    });
+    document.getElementById("doRegisterBtn")?.addEventListener("click", () => {
+        const user = document.getElementById("regUsername").value.trim();
+        const pass = document.getElementById("regPassword").value.trim();
+        const email = document.getElementById("regEmail").value.trim();
+        const whatsapp = document.getElementById("regWhatsapp").value.trim();
+        if (!user || !pass) { alert("ກະລຸນາປ້ອນຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານ"); return; }
+        if (users.find(u => u.username === user)) { alert("ຊື່ຜູ້ໃຊ້ນີ້ມີຢູ່ແລ້ວ"); return; }
+        const newUser = { id: Date.now()+"", username: user, password: pass, email, whatsapp };
+        users.push(newUser);
+        saveUsers();
+        currentUser = newUser;
+        saveCurrentUser();
+        updateUserUI();
+        showSellForm();
+        showBuyPanel();
+        alert("ສະໝັກສຳເລັດ ແລະ ເຂົ້າສູ່ລະບົບອັດຕະໂນມັດ");
+    });
+    document.getElementById("showRegisterBtn")?.addEventListener("click", showRegisterPanel);
+    document.getElementById("backToLoginBtn")?.addEventListener("click", showLoginPanel);
+
+    function showBuyPanel() {
+        document.getElementById("sellPanel").classList.add("hidden");
+        document.getElementById("buyPanel").classList.remove("hidden");
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelector("[data-tab='buy']").classList.add("active");
+        document.getElementById("footerBuyBtn").classList.add("active-footer");
+        document.getElementById("footerSellBtn").classList.remove("active-footer");
+        renderProducts();
+    }
+    function showSellPanel() {
+        document.getElementById("sellPanel").classList.remove("hidden");
+        document.getElementById("buyPanel").classList.add("hidden");
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelector("[data-tab='sell']").classList.add("active");
+        document.getElementById("footerSellBtn").classList.add("active-footer");
+        document.getElementById("footerBuyBtn").classList.remove("active-footer");
+        if (currentUser) showSellForm();
+        else showLoginPanel();
+    }
+
+    document.getElementById("searchBtn").onclick = () => {
+        currentFilter = document.getElementById("searchInput").value.trim();
+        renderProducts();
+        showBuyPanel();
+    };
+    document.getElementById("searchInput").onkeyup = (e) => {
+        if (e.key === "Enter") {
+            currentFilter = e.target.value.trim();
+            renderProducts();
+            showBuyPanel();
+        }
+    };
+    document.querySelectorAll(".tab").forEach(tab => {
+        tab.onclick = () => { if (tab.dataset.tab === "buy") showBuyPanel(); else showSellPanel(); };
+    });
+    document.getElementById("footerBuyBtn").onclick = showBuyPanel;
+    document.getElementById("footerSellBtn").onclick = showSellPanel;
+    document.getElementById("publishBtn").onclick = publishProduct;
+
+    loadData();
+</script>
+</body>
+</html>
