@@ -1,0 +1,481 @@
+html
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>ສະບາຍໃຈ - ຊຸມຊົນຂາຍລົດ ແລະ ສິນຄ້າ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2b7a4b 0%, #1e5a3a 100%);
+            color: white;
+            padding: 20px 16px;
+            border-radius: 0 0 24px 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header h1 span {
+            font-size: 32px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 6px;
+        }
+
+        /* Search */
+        .search-box {
+            background: white;
+            margin: -20px 16px 16px 16px;
+            padding: 8px 16px;
+            border-radius: 48px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            padding: 12px 0;
+            font-size: 16px;
+            outline: none;
+            background: transparent;
+        }
+
+        .search-box button {
+            background: #2b7a4b;
+            border: none;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* ແຖບເມນູ */
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin: 16px;
+            background: white;
+            padding: 6px;
+            border-radius: 48px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            background: #f0f2f5;
+            color: #555;
+            transition: 0.2s;
+        }
+
+        .tab.active {
+            background: #2b7a4b;
+            color: white;
+        }
+
+        /* ຟອມໂພສ */
+        .post-form {
+            background: white;
+            margin: 16px;
+            padding: 20px;
+            border-radius: 28px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .post-form h3 {
+            margin-bottom: 16px;
+            color: #1e5a3a;
+        }
+
+        .post-form input, .post-form textarea, .post-form select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .post-form button {
+            background: #2b7a4b;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 32px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* ລາຍການສິນຄ້າ */
+        .product-list {
+            margin: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 24px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: 0.2s;
+        }
+
+        .product-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e2f2a;
+        }
+
+        .product-category {
+            display: inline-block;
+            background: #e9f5ef;
+            color: #2b7a4b;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin: 8px 0;
+        }
+
+        .product-price {
+            font-size: 22px;
+            font-weight: bold;
+            color: #d9534f;
+            margin: 6px 0;
+        }
+
+        .product-desc {
+            color: #666;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        .product-contact {
+            background: #f0f7f3;
+            padding: 10px;
+            border-radius: 20px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #1e5a3a;
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .delete-btn {
+            background: #ffdddd;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: #c0392b;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .empty-msg {
+            text-align: center;
+            padding: 40px;
+            color: #aaa;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 16px 20px;
+            border-top: 1px solid #eee;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .footer button {
+            background: none;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            color: #555;
+        }
+
+        .footer .active-footer {
+            background: #2b7a4b;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>
+        <span>😊</span> ສະບາຍໃຈ
+    </h1>
+    <p>ຊຸມຊົນຂາຍລົດ ແລະ ສິນຄ້າ — ໂພສຟຣີ ທຸກຄົນ</p>
+</div>
+
+<div class="search-box">
+    <input type="text" id="searchInput" placeholder="ຄົ້ນຫາ ລົດ, ມືຖື, ເຄື່ອງໃຊ້...">
+    <button id="searchBtn">🔍</button>
+</div>
+
+<div class="tabs">
+    <div class="tab active" data-tab="buy">🛒 ຊື້ສິນຄ້າ</div>
+    <div class="tab" data-tab="sell">➕ ຂາຍສິນຄ້າ</div>
+</div>
+
+<!-- ຟອມລົງຂາຍ -->
+<div id="sellPanel" class="hidden">
+    <div class="post-form">
+        <h3>📦 ລົງຂາຍສິນຄ້າ</h3>
+        <select id="category">
+            <option value="ລົດ">🚗 ລົດ</option>
+            <option value="ເບີໂທ">📱 ເບີໂທລະສັບ</option>
+            <option value="ສິນຄ້າທົ່ວໄປ">🛍️ ສິນຄ້າທົ່ວໄປ</option>
+        </select>
+        <input type="text" id="productName" placeholder="ຊື່ສິນຄ້າ (ລົດໂຕຍູ້, iPhone, ຕູ້ເຢັນ...)">
+        <input type="text" id="price" placeholder="ລາຄາ (ກີບ)">
+        <textarea id="description" rows="2" placeholder="ລາຍລະອຽດເພີ່ມເຕີມ..."></textarea>
+        <input type="text" id="phone" placeholder="ເບີໂທຕິດຕໍ່ ຫຼື ລິ້ງແອັບ">
+        <button id="publishBtn">✅ ລົງຂາຍດ່ວນ</button>
+    </div>
+</div>
+
+<!-- ລາຍການສິນຄ້າ -->
+<div id="buyPanel">
+    <div id="productList" class="product-list">
+        <!-- ສິນຄ້າຈະສະແດງຢູ່ນີ້ -->
+    </div>
+</div>
+
+<div class="footer">
+    <button id="footerBuyBtn" class="active-footer">🛍️ ຊື້</button>
+    <button id="footerSellBtn">➕ ຂາຍ</button>
+</div>
+
+<script>
+    // ຂໍ້ມູນຕົ້ນແບບ (ສາມາດແກ້ໄດ້)
+    let products = [
+        {
+            id: "p1",
+            category: "ລົດ",
+            name: "ລົດໂຕຍູ້ 2020",
+            price: "65,000,000 ກີບ",
+            desc: "ສະພາບດີ ນ້ຳມັນປະຫຍັດ ເຄື່ອງສວຍ",
+            phone: "020 12345678",
+            date: Date.now()
+        },
+        {
+            id: "p2",
+            category: "ເບີໂທ",
+            name: "iPhone 13 Pro Max",
+            price: "8,500,000 ກີບ",
+            desc: "ມືສອງ ສະພາບເກັບດີ ບໍ່ເຄີຍເສຍ",
+            phone: "020 98765432",
+            date: Date.now()
+        },
+        {
+            id: "p3",
+            category: "ສິນຄ້າທົ່ວໄປ",
+            name: "ຈັກຊັກຜ້າ LG",
+            price: "2,200,000 ກີບ",
+            desc: "ໃຊ້ງານປົກກະຕິ ຮັບປະກັນສ່ວນຕົວ",
+            phone: "020 55554444",
+            date: Date.now()
+        }
+    ];
+
+    function saveToLocal() {
+        localStorage.setItem("sabaiJaiProducts", JSON.stringify(products));
+    }
+
+    function loadFromLocal() {
+        const stored = localStorage.getItem("sabaiJaiProducts");
+        if (stored) {
+            products = JSON.parse(stored);
+        } else {
+            // ຖ້າບໍ່ມີຂໍ້ມູນ ໃຫ້ໃຊ້ຕົ້ນແບບ
+            saveToLocal();
+        }
+    }
+
+    // ຟັງຊັນສະແດງສິນຄ້າ
+    let currentFilter = "";
+    function renderProducts() {
+        const container = document.getElementById("productList");
+        let filtered = [...products];
+        if (currentFilter !== "") {
+            filtered = filtered.filter(p => 
+                p.name.toLowerCase().includes(currentFilter.toLowerCase()) ||
+                p.category.toLowerCase().includes(currentFilter.toLowerCase()) ||
+                p.desc.toLowerCase().includes(currentFilter.toLowerCase())
+            );
+        }
+        // ຈັດລຽງຕາມເວລາລ່າສຸດ
+        filtered.sort((a,b) => b.date - a.date);
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<div class="empty-msg">😢 ຍັງບໍ່ມີສິນຄ້າ ຫຼື ບໍ່ພົບລາຍການ</div>`;
+            return;
+        }
+
+        container.innerHTML = filtered.map(p => `
+            <div class="product-card">
+                <div class="product-title">${escapeHtml(p.name)}</div>
+                <div class="product-category">${p.category}</div>
+                <div class="product-price">💰 ${p.price}</div>
+                <div class="product-desc">${escapeHtml(p.desc)}</div>
+                <div class="product-contact">📞 ຕິດຕໍ່: ${escapeHtml(p.phone)}</div>
+                <button class="delete-btn" data-id="${p.id}">❌ ລຶບໂພສ</button>
+            </div>
+        `).join("");
+
+        // ເພີ່ມ event ລຶບ
+        document.querySelectorAll(".delete-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const id = btn.getAttribute("data-id");
+                products = products.filter(p => p.id !== id);
+                saveToLocal();
+                renderProducts();
+            });
+        });
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // ໂພສສິນຄ້າໃໝ່
+    function publishProduct() {
+        const category = document.getElementById("category").value;
+        const name = document.getElementById("productName").value.trim();
+        const price = document.getElementById("price").value.trim();
+        const desc = document.getElementById("description").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+
+        if (!name || !price || !phone) {
+            alert("ກະລຸນາປ້ອນ ຊື່ສິນຄ້າ, ລາຄາ ແລະ ເບີໂທຕິດຕໍ່ກ່ອນ");
+            return;
+        }
+
+        const newProduct = {
+            id: Date.now() + "" + Math.floor(Math.random() * 10000),
+            category: category,
+            name: name,
+            price: price,
+            desc: desc || "ບໍ່ມີລາຍລະອຽດເພີ່ມ",
+            phone: phone,
+            date: Date.now()
+        };
+        products.unshift(newProduct);
+        saveToLocal();
+        renderProducts();
+
+        // ລ້າງຟອມ
+        document.getElementById("productName").value = "";
+        document.getElementById("price").value = "";
+        document.getElementById("description").value = "";
+        document.getElementById("phone").value = "";
+
+        // ສະຫຼັບໄປທີ່ແຖບຊື້
+        showBuyPanel();
+        alert("✅ ໂພສສຳເລັດແລ້ວ! ທຸກຄົນສາມາດເຫັນສິນຄ້າຂອງທ່ານ");
+    }
+
+    function showBuyPanel() {
+        document.getElementById("sellPanel").classList.add("hidden");
+        document.getElementById("buyPanel").classList.remove("hidden");
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelector("[data-tab='buy']").classList.add("active");
+        document.getElementById("footerBuyBtn").classList.add("active-footer");
+        document.getElementById("footerSellBtn").classList.remove("active-footer");
+        renderProducts();
+    }
+
+    function showSellPanel() {
+        document.getElementById("sellPanel").classList.remove("hidden");
+        document.getElementById("buyPanel").classList.add("hidden");
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelector("[data-tab='sell']").classList.add("active");
+        document.getElementById("footerSellBtn").classList.add("active-footer");
+        document.getElementById("footerBuyBtn").classList.remove("active-footer");
+    }
+
+    // Event listeners
+    document.getElementById("searchBtn").addEventListener("click", () => {
+        currentFilter = document.getElementById("searchInput").value.trim();
+        renderProducts();
+        showBuyPanel();
+    });
+    document.getElementById("searchInput").addEventListener("keyup", (e) => {
+        if(e.key === "Enter") {
+            currentFilter = e.target.value.trim();
+            renderProducts();
+            showBuyPanel();
+        }
+    });
+
+    document.querySelectorAll(".tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+            if(tab.dataset.tab === "buy") showBuyPanel();
+            else showSellPanel();
+        });
+    });
+
+    document.getElementById("footerBuyBtn").addEventListener("click", showBuyPanel);
+    document.getElementById("footerSellBtn").addEventListener("click", showSellPanel);
+    document.getElementById("publishBtn").addEventListener("click", publishProduct);
+
+    // ເລີ່ມຕົ້ນ
+    loadFromLocal();
+    renderProducts();
+    showBuyPanel();
+</script>
+</body>
+</html>
