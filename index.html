@@ -3,1515 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ສະບາຍໃຈ - ຊຸມຊົນຂາຍສິນຄ້າ</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
-        body { background: #f5f7fb; padding-bottom: 80px; }
-        .header { background: linear-gradient(135deg, #2b7a4b, #1e5a3a); color: white; padding: 20px 16px; border-radius: 0 0 24px 24px; }
-        .header h1 { font-size: 28px; display: flex; align-items: center; gap: 8px; }
-        .header p { font-size: 14px; opacity: 0.9; margin-top: 6px; }
-        .search-box { background: white; margin: -20px 16px 16px; padding: 8px 16px; border-radius: 48px; display: flex; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .search-box input { flex: 1; border: none; padding: 12px 0; font-size: 16px; outline: none; }
-        .search-box button { background: #2b7a4b; border: none; color: white; padding: 8px 18px; border-radius: 40px; cursor: pointer; }
-        .tabs { display: flex; gap: 12px; margin: 16px; background: white; padding: 6px; border-radius: 48px; }
-        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 40px; font-weight: bold; cursor: pointer; background: #f0f2f5; color: #555; }
-        .tab.active { background: #2b7a4b; color: white; }
-        .post-form, .auth-form, .profile-form { background: white; margin: 16px; padding: 20px; border-radius: 28px; }
-        .post-form input, .post-form textarea, .post-form select, .auth-form input, .profile-form input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 15px; }
-        .post-form button, .auth-form button, .profile-form button { background: #2b7a4b; color: white; border: none; padding: 12px; width: 100%; border-radius: 32px; font-weight: bold; cursor: pointer; }
-        .product-list { margin: 16px; display: flex; flex-direction: column; gap: 16px; }
-        .product-card { background: white; border-radius: 24px; padding: 16px; }
-        .product-title { font-size: 18px; font-weight: bold; color: #1e2f2a; }
-        .product-category { display: inline-block; background: #e9f5ef; color: #2b7a4b; padding: 4px 12px; border-radius: 20px; font-size: 12px; margin: 8px 0; }
-        .product-price { font-size: 22px; font-weight: bold; color: #d9534f; margin: 6px 0; }
-        .product-desc { color: #666; margin: 8px 0; font-size: 14px; }
-        .product-contact { background: #f0f7f3; padding: 10px; border-radius: 20px; margin-top: 10px; font-size: 14px; color: #1e5a3a; word-break: break-all; }
-        .delete-btn { background: #ffdddd; border: none; padding: 6px 12px; border-radius: 20px; color: #c0392b; margin-top: 10px; cursor: pointer; }
-        .logout-btn { background: #ddd; border: none; padding: 6px 12px; border-radius: 20px; color: #333; cursor: pointer; }
-        .empty-msg { text-align: center; padding: 40px; color: #aaa; }
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 16px 20px; border-top: 1px solid #eee; }
-        .footer button { background: none; border: none; font-size: 18px; font-weight: bold; padding: 10px 20px; border-radius: 40px; cursor: pointer; color: #555; }
-        .footer .active-footer { background: #2b7a4b; color: white; }
-        .hidden { display: none; }
-        .profile-pic { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 10px; }
-        .user-info { display: flex; align-items: center; justify-content: space-between; background: white; margin: 16px; padding: 12px; border-radius: 28px; }
-        .user-name { font-weight: bold; }
-        .product-image { width: 100%; max-height: 200px; object-fit: cover; border-radius: 16px; margin-top: 8px; background: #f0f2f5; }
-    </style>
-</head>
-<body>
-<div class="header"><h1><span>😊</span> ສະບາຍໃຈ</h1><p>ຊຸມຊົນຂາຍສິນຄ້າ — ລົງທະບຽນຟຣີ</p></div>
-
-<div id="authSection" class="auth-form">
-    <h3>ເຂົ້າສູ່ລະບົບ / ສະໝັກສະມາຊິກ</h3>
-    <input type="email" id="email" placeholder="ອີເມວ">
-    <input type="password" id="password" placeholder="ລະຫັດຜ່ານ">
-    <button id="loginBtn">ເຂົ້າສູ່ລະບົບ</button>
-    <button id="registerBtn" style="background:#555; margin-top:8px;">ສະໝັກສະມາຊິກ</button>
-    <button id="googleBtn" style="background:#4285F4; margin-top:8px;">ເຂົ້າສູ່ລະບົບດ້ວຍ Google</button>
-</div>
-
-<div id="appContent" class="hidden">
-    <div id="userInfo" class="user-info"></div>
-    <div class="search-box"><input type="text" id="searchInput" placeholder="ຄົ້ນຫາສິນຄ້າ..."><button id="searchBtn">🔍</button></div>
-    <div class="tabs"><div class="tab active" data-tab="buy">🛒 ຊື້ສິນຄ້າ</div><div class="tab" data-tab="sell">➕ ຂາຍສິນຄ້າ</div><div class="tab" data-tab="profile">👤 ໂປຣຟາຍ</div></div>
-    
-    <div id="sellPanel" class="hidden"><div class="post-form"><h3>ລົງຂາຍສິນຄ້າ</h3><select id="category"><option value="ລົດ">ລົດ</option><option value="ເບີໂທ">ເບີໂທລະສັບ</option><option value="ສິນຄ້າທົ່ວໄປ">ສິນຄ້າທົ່ວໄປ</option></select><input type="text" id="productName" placeholder="ຊື່ສິນຄ້າ"><input type="text" id="price" placeholder="ລາຄາ"><textarea id="description" rows="2" placeholder="ລາຍລະອຽດ"></textarea><input type="text" id="phone" placeholder="ເບີໂທຕິດຕໍ່"><input type="file" id="productImage" accept="image/*"><button id="publishBtn">ລົງຂາຍ</button></div></div>
-    
-    <div id="buyPanel"><div id="productList" class="product-list"></div></div>
-    
-    <div id="profilePanel" class="hidden"><div class="profile-form"><h3>ແກ້ໄຂໂປຣຟາຍ</h3><input type="text" id="displayName" placeholder="ຊື່ຜູ້ໃຊ້"><input type="file" id="profileImage" accept="image/*"><button id="updateProfileBtn">ອັບເດດໂປຣຟາຍ</button><button id="logoutBtn" class="logout-btn">ອອກຈາກລະບົບ</button></div></div>
-</div>
-
-<script type="importmap">
-    {
-        "imports": {
-            "firebase/app": "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js",
-            "firebase/auth": "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js",
-            "firebase/firestore": "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js",
-            "firebase/storage": "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js"
-        }
-    }
-</script>
-
-<script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc } from "firebase/firestore";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyC8CF6_S0EsRFDt99Uhy7ycl35MBfgJfds",
-        authDomain: "sabai-jai-app.firebaseapp.com",
-        projectId: "sabai-jai-app",
-        storageBucket: "sabai-jai-app.firebasestorage.app",
-        messagingSenderId: "998120600338",
-        appId: "1:998120600338:web:d809f6630335c09443f9cb",
-        measurementId: "G-XY8X97HJ5L"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-    const provider = new GoogleAuthProvider();
-
-    let currentUser = null;
-    let products = [];
-
-    const authSection = document.getElementById('authSection');
-    const appContent = document.getElementById('appContent');
-    const userInfoDiv = document.getElementById('userInfo');
-    const productListDiv = document.getElementById('productList');
-    
-    function renderUserInfo() {
-        if(!currentUser) return;
-        userInfoDiv.innerHTML = `<img src="${currentUser.photoURL || 'https://via.placeholder.com/50'}" class="profile-pic"><span class="user-name">${currentUser.displayName || currentUser.email}</span>`;
-    }
-    
-    async function loadProducts() {
-        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-        const snapshot = await getDocs(q);
-        products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderProducts();
-    }
-    
-    function renderProducts() {
-        const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
-        let filtered = products.filter(p => p.name?.toLowerCase().includes(search) || p.category?.toLowerCase().includes(search));
-        if(filtered.length === 0) { productListDiv.innerHTML = '<div class="empty-msg">ຍັງບໍ່ມີສິນຄ້າ</div>'; return; }
-        productListDiv.innerHTML = filtered.map(p => `<div class="product-card"><div class="product-title">${escapeHtml(p.name)}</div><div class="product-category">${p.category}</div><div class="product-price">💰 ${p.price}</div><div class="product-desc">${escapeHtml(p.desc)}</div><div class="product-contact">📞 ຕິດຕໍ່: ${escapeHtml(p.phone)}</div>${p.imageUrl ? `<img src="${p.imageUrl}" class="product-image">` : ''}${currentUser?.uid === p.userId ? `<button class="delete-btn" data-id="${p.id}">❌ ລຶບ</button>` : ''}</div>`).join('');
-        document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', async (e) => { await deleteDoc(doc(db, "products", btn.dataset.id)); loadProducts(); }));
-    }
-    
-    function escapeHtml(str) { return str?.replace(/[&<>]/g, function(m) { if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }) || ''; }
-    
-    document.getElementById('searchBtn').addEventListener('click', renderProducts);
-    document.getElementById('publishBtn')?.addEventListener('click', async () => {
-        const name = document.getElementById('productName').value, price = document.getElementById('price').value, desc = document.getElementById('description').value, phone = document.getElementById('phone').value, category = document.getElementById('category').value;
-        if(!name || !price || !phone) return alert('ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບ');
-        let imageUrl = '';
-        const file = document.getElementById('productImage').files[0];
-        if(file) { const storageRef = ref(storage, `products/${Date.now()}_${file.name}`); await uploadBytes(storageRef, file); imageUrl = await getDownloadURL(storageRef); }
-        await addDoc(collection(db, "products"), { name, price, desc, phone, category, imageUrl, userId: currentUser.uid, userEmail: currentUser.email, createdAt: Date.now() });
-        alert('ໂພສສຳເລັດ');
-        document.getElementById('productName').value = ''; document.getElementById('price').value = ''; document.getElementById('description').value = ''; document.getElementById('phone').value = ''; document.getElementById('productImage').value = '';
-        loadProducts();
-    });
-    
-    document.getElementById('updateProfileBtn')?.addEventListener('click', async () => {
-        const newName = document.getElementById('displayName').value;
-        if(newName) await updateProfile(currentUser, { displayName: newName });
-        const file = document.getElementById('profileImage').files[0];
-        if(file) { const storageRef = ref(storage, `profiles/${currentUser.uid}`); await uploadBytes(storageRef, file); const url = await getDownloadURL(storageRef); await updateProfile(currentUser, { photoURL: url }); }
-        alert('ອັບເດດສຳເລັດ');
-        renderUserInfo();
-    });
-    
-    document.getElementById('logoutBtn')?.addEventListener('click', async () => { await signOut(auth); });
-    
-    document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById('sellPanel').classList.add('hidden');
-        document.getElementById('buyPanel').classList.add('hidden');
-        document.getElementById('profilePanel').classList.add('hidden');
-        if(tab.dataset.tab === 'buy') document.getElementById('buyPanel').classList.remove('hidden');
-        if(tab.dataset.tab === 'sell') document.getElementById('sellPanel').classList.remove('hidden');
-        if(tab.dataset.tab === 'profile') document.getElementById('profilePanel').classList.remove('hidden');
-    }));
-    
-    onAuthStateChanged(auth, (user) => {
-        currentUser = user;
-        if(user) { authSection.classList.add('hidden'); appContent.classList.remove('hidden'); renderUserInfo(); loadProducts(); }
-        else { authSection.classList.remove('hidden'); appContent.classList.add('hidden'); }
-    });
-    
-    window.login = () => { const email = document.getElementById('email').value, password = document.getElementById('password').value; signInWithEmailAndPassword(auth, email, password).catch(e => alert(e.message)); };
-    window.register = () => { const email = document.getElementById('email').value, password = document.getElementById('password').value; createUserWithEmailAndPassword(auth, email, password).catch(e => alert(e.message)); };
-    window.googleLogin = () => { signInWithPopup(auth, provider).catch(e => alert(e.message)); };
-    document.getElementById('loginBtn').onclick = window.login;
-    document.getElementById('registerBtn').onclick = window.register;
-    document.getElementById('googleBtn').onclick = window.googleLogin;
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="lo">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ສະບາຍໃຈ - ຫວຍ ແລະ ຊຸມຊົນຂາຍສິນຄ້າ</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
-        body { background: #f5f7fb; padding-bottom: 80px; }
-        .header { background: linear-gradient(135deg, #2b7a4b, #1e5a3a); color: white; padding: 20px 16px; border-radius: 0 0 24px 24px; display: flex; align-items: center; gap: 12px; }
-        .logo { background: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-        .header-text h1 { font-size: 24px; }
-        .header-text p { font-size: 12px; opacity: 0.9; }
-        .wallet-bar { background: #ffe0b2; margin: 12px 16px; padding: 10px 16px; border-radius: 40px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; color: #e65100; }
-        .search-box { background: white; margin: -20px 16px 16px; padding: 8px 16px; border-radius: 48px; display: flex; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .search-box input { flex: 1; border: none; padding: 12px 0; font-size: 16px; outline: none; }
-        .search-box button { background: #2b7a4b; border: none; color: white; padding: 8px 18px; border-radius: 40px; cursor: pointer; }
-        .tabs { display: flex; gap: 8px; margin: 16px; flex-wrap: wrap; }
-        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 40px; font-weight: bold; cursor: pointer; background: #f0f2f5; color: #555; font-size: 14px; }
-        .tab.active { background: #2b7a4b; color: white; }
-        .post-form, .auth-form, .profile-form, .lottery-form, .topup-form { background: white; margin: 16px; padding: 20px; border-radius: 28px; }
-        .post-form input, .post-form textarea, .post-form select, .auth-form input, .profile-form input, .lottery-form input, .lottery-form select, .topup-form input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 15px; }
-        .post-form button, .auth-form button, .profile-form button, .lottery-form button, .topup-form button { background: #2b7a4b; color: white; border: none; padding: 12px; width: 100%; border-radius: 32px; font-weight: bold; cursor: pointer; }
-        .product-list { margin: 16px; display: flex; flex-direction: column; gap: 16px; }
-        .product-card { background: white; border-radius: 24px; padding: 16px; }
-        .product-title { font-size: 18px; font-weight: bold; }
-        .product-category { display: inline-block; background: #e9f5ef; color: #2b7a4b; padding: 4px 12px; border-radius: 20px; font-size: 12px; margin: 8px 0; }
-        .product-price { font-size: 22px; font-weight: bold; color: #d9534f; }
-        .product-desc { color: #666; margin: 8px 0; font-size: 14px; }
-        .product-contact { background: #f0f7f3; padding: 10px; border-radius: 20px; margin-top: 10px; font-size: 14px; }
-        .action-buttons { display: flex; gap: 12px; margin: 12px 0; }
-        .like-btn, .share-btn { background: #f0f2f5; border: none; padding: 8px 16px; border-radius: 40px; cursor: pointer; font-size: 14px; }
-        .like-btn.liked { background: #ffebee; color: #e91e63; }
-        .comments-section { margin-top: 12px; border-top: 1px solid #eee; padding-top: 12px; }
-        .comment { background: #f9f9f9; padding: 8px 12px; border-radius: 16px; margin-bottom: 8px; font-size: 13px; }
-        .comment strong { color: #2b7a4b; }
-        .comment-input { display: flex; gap: 8px; margin-top: 8px; }
-        .comment-input input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 24px; outline: none; }
-        .comment-input button { background: #2b7a4b; color: white; border: none; padding: 8px 16px; border-radius: 24px; cursor: pointer; }
-        .delete-btn { background: #ffdddd; border: none; padding: 6px 12px; border-radius: 20px; color: #c0392b; margin-top: 10px; cursor: pointer; }
-        .logout-btn { background: #ddd; border: none; padding: 6px 12px; border-radius: 20px; color: #333; cursor: pointer; }
-        .empty-msg { text-align: center; padding: 40px; color: #aaa; }
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 16px 20px; border-top: 1px solid #eee; flex-wrap: wrap; }
-        .footer button { background: none; border: none; font-size: 14px; font-weight: bold; padding: 8px 12px; border-radius: 40px; cursor: pointer; color: #555; }
-        .footer .active-footer { background: #2b7a4b; color: white; }
-        .hidden { display: none; }
-        .profile-pic { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 10px; }
-        .user-info { display: flex; align-items: center; justify-content: space-between; background: white; margin: 16px; padding: 12px; border-radius: 28px; }
-        .wallet-amount { font-size: 20px; color: #e65100; }
-        .lottery-card { background: #fff8e1; border-left: 4px solid #ff9800; }
-    </style>
-</head>
-<body>
-<div class="header">
-    <div class="logo">🎲</div>
-    <div class="header-text"><h1>ສະບາຍໃຈ</h1><p>ຊື້ຂາຍຫວຍ ແລະ ສິນຄ້າ</p></div>
-</div>
-
-<div id="authSection" class="auth-form">
-    <h3>ເຂົ້າສູ່ລະບົບ / ສະໝັກ</h3>
-    <input type="email" id="email" placeholder="ອີເມວ">
-    <input type="password" id="password" placeholder="ລະຫັດຜ່ານ">
-    <button id="loginBtn">ເຂົ້າສູ່ລະບົບ</button>
-    <button id="registerBtn" style="background:#555;">ສະໝັກ</button>
-    <button id="googleBtn" style="background:#4285F4;">Google</button>
-</div>
-
-<div id="appContent" class="hidden">
-    <div id="userInfo" class="user-info"></div>
-    <div id="walletInfo" class="wallet-bar">💰 ເງິນຄົງເຫຼືອ: <span id="walletAmount">0</span> ກີບ  <button id="topupBtn" style="background:#ff9800; border:none; padding:4px 12px; border-radius:20px;">➕ ເຕີມເງິນ</button></div>
-    
-    <div class="tabs">
-        <div class="tab active" data-tab="buy">🛒 ຊື້ສິນຄ້າ</div>
-        <div class="tab" data-tab="lottery">🎰 ຫວຍລາວ/ໄທ</div>
-        <div class="tab" data-tab="sell">➕ ຂາຍ</div>
-        <div class="tab" data-tab="profile">👤 ໂປຣຟາຍ</div>
-    </div>
-    
-    <div id="sellPanel" class="hidden"><div class="post-form"><h3>ລົງຂາຍສິນຄ້າ</h3><select id="category"><option value="ລົດ">ລົດ</option><option value="ເບີໂທ">ເບີໂທ</option><option value="ສິນຄ້າທົ່ວໄປ">ທົ່ວໄປ</option></select><input type="text" id="productName" placeholder="ຊື່ສິນຄ້າ"><input type="text" id="price" placeholder="ລາຄາ"><textarea id="description" rows="2" placeholder="ລາຍລະອຽດ"></textarea><input type="text" id="phone" placeholder="ເບີໂທຕິດຕໍ່"><input type="file" id="productImage" accept="image/*"><button id="publishBtn">ລົງຂາຍ</button></div></div>
-    
-    <div id="buyPanel"><div id="productList" class="product-list"></div></div>
-    
-    <div id="lotteryPanel" class="hidden"><div class="lottery-form"><h3>🎰 ຊື້ຫວຍ</h3><select id="lotteryCountry"><option value="ລາວ">ຫວຍລາວ</option><option value="ໄທ">ຫວຍໄທ</option></select><input type="text" id="lotteryNumber" placeholder="ເລກຫວຍ (ເຊັ່ນ: 1234)"><input type="number" id="lotteryAmount" placeholder="ຈຳນວນຫວຍ (ບໍ່ກີບ)"><button id="buyLotteryBtn">ຊື້ຫວຍ</button><h3 style="margin-top:20px">📋 ປະຫວັດການຊື້</h3><div id="lotteryHistory"></div></div></div>
-    
-    <div id="profilePanel" class="hidden"><div class="profile-form"><h3>ແກ້ໄຂໂປຣຟາຍ</h3><input type="text" id="displayName" placeholder="ຊື່ຜູ້ໃຊ້"><input type="file" id="profileImage" accept="image/*"><button id="updateProfileBtn">ອັບເດດ</button><button id="logoutBtn" class="logout-btn">ອອກຈາກລະບົບ</button></div></div>
-</div>
-
-<div id="topupModal" class="hidden" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:1000;"><div class="topup-form" style="background:white; width:90%; max-width:350px;"><h3>ເຕີມເງິນ</h3><input type="number" id="topupAmount" placeholder="ຈຳນວນເງິນ (ກີບ)"><button id="confirmTopupBtn">ຢືນຢັນ</button><button id="closeTopupBtn" style="background:#999; margin-top:8px;">ປິດ</button></div></div>
-
-<script type="importmap">
-    { "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js", "firebase/auth": "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js", "firebase/storage": "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js" } }
-</script>
-
-<script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, where, getDoc, setDoc } from "firebase/firestore";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
-    const firebaseConfig = { apiKey: "AIzaSyC8CF6_S0EsRFDt99Uhy7ycl35MBfgJfds", authDomain: "sabai-jai-app.firebaseapp.com", projectId: "sabai-jai-app", storageBucket: "sabai-jai-app.firebasestorage.app", messagingSenderId: "998120600338", appId: "1:998120600338:web:d809f6630335c09443f9cb" };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-    const provider = new GoogleAuthProvider();
-
-    let currentUser = null;
-    let products = [];
-    let likes = {};
-    let comments = {};
-
-    const authSection = document.getElementById('authSection');
-    const appContent = document.getElementById('appContent');
-    
-    async function getUserWallet(uid) { const ref = doc(db, "wallets", uid); const snap = await getDoc(ref); return snap.exists() ? snap.data().balance : 0; }
-    async function updateWallet(uid, amount) { await setDoc(doc(db, "wallets", uid), { balance: amount }, { merge: true }); }
-    async function loadLotteryHistory() { const q = query(collection(db, "lottery"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc")); const snap = await getDocs(q); document.getElementById('lotteryHistory').innerHTML = snap.docs.map(d => `<div class="comment">${d.data().country} | ເລກ ${d.data().number} | ${d.data().amount} ກີບ | ${new Date(d.data().createdAt).toLocaleString()}</div>`).join('') || '<div>ຍັງບໍ່ມີການຊື້</div>'; }
-    
-    document.getElementById('buyLotteryBtn')?.addEventListener('click', async () => {
-        const country = document.getElementById('lotteryCountry').value;
-        const number = document.getElementById('lotteryNumber').value;
-        const amount = parseInt(document.getElementById('lotteryAmount').value);
-        if(!number || !amount) return alert('ປ້ອນເລກ ແລະ ຈຳນວນເງິນ');
-        let balance = await getUserWallet(currentUser.uid);
-        if(balance < amount) return alert('ເງິນບໍ່ພອ');
-        await updateWallet(currentUser.uid, balance - amount);
-        await addDoc(collection(db, "lottery"), { userId: currentUser.uid, country, number, amount, createdAt: Date.now() });
-        alert('ຊື້ຫວຍສຳເລັດ');
-        document.getElementById('walletAmount').innerText = await getUserWallet(currentUser.uid);
-        loadLotteryHistory();
-    });
-    
-    document.getElementById('topupBtn')?.addEventListener('click', () => { document.getElementById('topupModal').classList.remove('hidden'); });
-    document.getElementById('confirmTopupBtn')?.addEventListener('click', async () => { let amt = parseInt(document.getElementById('topupAmount').value); if(amt) { let bal = await getUserWallet(currentUser.uid); await updateWallet(currentUser.uid, bal + amt); document.getElementById('walletAmount').innerText = bal + amt; alert('ເຕີມເງິນສຳເລັດ'); document.getElementById('topupModal').classList.add('hidden'); } });
-    document.getElementById('closeTopupBtn')?.addEventListener('click', () => { document.getElementById('topupModal').classList.add('hidden'); });
-    
-    async function loadProducts() { const q = query(collection(db, "products"), orderBy("createdAt", "desc")); const snapshot = await getDocs(q); products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderProducts(); }
-    
-    async function renderProducts() {
-        const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
-        let filtered = products.filter(p => p.name?.toLowerCase().includes(search));
-        if(filtered.length === 0) { document.getElementById('productList').innerHTML = '<div class="empty-msg">ຍັງບໍ່ມີສິນຄ້າ</div>'; return; }
-        document.getElementById('productList').innerHTML = await Promise.all(filtered.map(async p => {
-            const likeSnap = await getDocs(query(collection(db, "likes"), where("productId", "==", p.id)));
-            const likeCount = likeSnap.size;
-            const userLiked = likeSnap.docs.some(d => d.data().userId === currentUser?.uid);
-            const commentsSnap = await getDocs(query(collection(db, "comments"), where("productId", "==", p.id), orderBy("createdAt", "desc")));
-            const commentsList = commentsSnap.docs.map(c => `<div class="comment"><strong>${c.data().userName}:</strong> ${c.data().text}<br><small>${new Date(c.data().createdAt).toLocaleString()}</small></div>`).join('');
-            return `<div class="product-card"><div class="product-title">${p.name}</div><div class="product-category">${p.category}</div><div class="product-price">💰 ${p.price}</div><div class="product-desc">${p.desc}</div><div class="product-contact">📞 ${p.phone}</div>${p.imageUrl ? `<img src="${p.imageUrl}" style="max-width:100%; border-radius:16px; margin-top:8px;">` : ''}<div class="action-buttons"><button class="like-btn ${userLiked ? 'liked' : ''}" data-id="${p.id}">${userLiked ? '❤️' : '🤍'} ${likeCount}</button><button class="share-btn" data-name="${p.name}" data-price="${p.price}">🔗 ແຊ່</button></div><div class="comments-section"><div class="comment-list">${commentsList}</div><div class="comment-input"><input type="text" placeholder="ຂຽນຄຳເຫັນ..." id="commentInput_${p.id}"><button onclick="window.addComment('${p.id}')">ສົ່ງ</button></div></div>${currentUser?.uid === p.userId ? `<button class="delete-btn" data-id="${p.id}">❌ ລຶບ</button>` : ''}</div>`;
-        })).then(html => html.join(''));
-        
-        document.querySelectorAll('.like-btn').forEach(btn => btn.addEventListener('click', async (e) => { const pid = btn.dataset.id; await addDoc(collection(db, "likes"), { productId: pid, userId: currentUser.uid }); renderProducts(); }));
-        document.querySelectorAll('.share-btn').forEach(btn => btn.addEventListener('click', () => { const name = btn.dataset.name, price = btn.dataset.price; navigator.share ? navigator.share({ title: name, text: `ສິນຄ້າ: ${name} ລາຄາ ${price}`, url: window.location.href }) : alert('ກົດຄັດລອກລິ້ງ: '+window.location.href); }));
-        document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', async (e) => { await deleteDoc(doc(db, "products", btn.dataset.id)); loadProducts(); }));
-    }
-    
-    window.addComment = async (productId) => { const text = document.getElementById(`commentInput_${productId}`).value; if(text) await addDoc(collection(db, "comments"), { productId, userId: currentUser.uid, userName: currentUser.displayName || currentUser.email, text, createdAt: Date.now() }); renderProducts(); };
-    
-    document.getElementById('searchBtn')?.addEventListener('click', renderProducts);
-    document.getElementById('publishBtn')?.addEventListener('click', async () => {
-        const name = document.getElementById('productName').value, price = document.getElementById('price').value, desc = document.getElementById('description').value, phone = document.getElementById('phone').value, category = document.getElementById('category').value;
-        if(!name || !price || !phone) return alert('ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບ');
-        let imageUrl = '';
-        const file = document.getElementById('productImage').files[0];
-        if(file) { const storageRef = ref(storage, `products/${Date.now()}_${file.name}`); await uploadBytes(storageRef, file); imageUrl = await getDownloadURL(storageRef); }
-        await addDoc(collection(db, "products"), { name, price, desc, phone, category, imageUrl, userId: currentUser.uid, userEmail: currentUser.email, createdAt: Date.now() });
-        alert('ໂພສສຳເລັດ');
-        loadProducts();
-    });
-    
-    document.getElementById('updateProfileBtn')?.addEventListener('click', async () => { const newName = document.getElementById('displayName').value; if(newName) await updateProfile(currentUser, { displayName: newName }); const file = document.getElementById('profileImage').files[0]; if(file) { const storageRef = ref(storage, `profiles/${currentUser.uid}`); await uploadBytes(storageRef, file); const url = await getDownloadURL(storageRef); await updateProfile(currentUser, { photoURL: url }); } alert('ອັບເດດສຳເລັດ'); renderUserInfo(); });
-    
-    document.getElementById('logoutBtn')?.addEventListener('click', async () => { await signOut(auth); });
-    
-    function renderUserInfo() { if(!currentUser) return; document.getElementById('userInfo').innerHTML = `<img src="${currentUser.photoURL || 'https://via.placeholder.com/50'}" class="profile-pic"><span class="user-name">${currentUser.displayName || currentUser.email}</span>`; }
-    
-    document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById('sellPanel').classList.add('hidden');
-        document.getElementById('buyPanel').classList.add('hidden');
-        document.getElementById('lotteryPanel').classList.add('hidden');
-        document.getElementById('profilePanel').classList.add('hidden');
-        if(tab.dataset.tab === 'buy') document.getElementById('buyPanel').classList.remove('hidden');
-        if(tab.dataset.tab === 'sell') document.getElementById('sellPanel').classList.remove('hidden');
-        if(tab.dataset.tab === 'lottery') { document.getElementById('lotteryPanel').classList.remove('hidden'); loadLotteryHistory(); }
-        if(tab.dataset.tab === 'profile') document.getElementById('profilePanel').classList.remove('hidden');
-    }));
-    
-    onAuthStateChanged(auth, async (user) => {
-        currentUser = user;
-        if(user) { 
-            authSection.classList.add('hidden'); 
-            appContent.classList.remove('hidden'); 
-            renderUserInfo(); 
-            const bal = await getUserWallet(user.uid);
-            document.getElementById('walletAmount').innerText = bal;
-            loadProducts(); 
-        } else { authSection.classList.remove('hidden'); appContent.classList.add('hidden'); }
-    });
-    
-    window.login = () => { const email = document.getElementById('email').value, password = document.getElementById('password').value; signInWithEmailAndPassword(auth, email, password).catch(e => alert(e.message)); };
-    window.register = () => { const email = document.getElementById('email').value, password = document.getElementById('password').value; createUserWithEmailAndPassword(auth, email, password).catch(e => alert(e.message)); };
-    window.googleLogin = () => { signInWithPopup(auth, provider).catch(e => alert(e.message)); };
-    document.getElementById('loginBtn').onclick = window.login;
-    document.getElementById('registerBtn').onclick = window.register;
-    document.getElementById('googleBtn').onclick = window.googleLogin;
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="lo">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ສະບາຍໃຈ - ຫວຍ ແລະ ຊຸມຊົນຂາຍສິນຄ້າ</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
-        body { background: #f5f7fb; padding-bottom: 80px; }
-        .header { background: linear-gradient(135deg, #2b7a4b, #1e5a3a); color: white; padding: 20px 16px; border-radius: 0 0 24px 24px; display: flex; align-items: center; gap: 12px; }
-        .logo { background: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-        .header-text h1 { font-size: 24px; }
-        .header-text p { font-size: 12px; opacity: 0.9; }
-        .wallet-bar { background: #ffe0b2; margin: 12px 16px; padding: 10px 16px; border-radius: 40px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; color: #e65100; }
-        .search-box { background: white; margin: -20px 16px 16px; padding: 8px 16px; border-radius: 48px; display: flex; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .search-box input { flex: 1; border: none; padding: 12px 0; font-size: 16px; outline: none; }
-        .search-box button { background: #2b7a4b; border: none; color: white; padding: 8px 18px; border-radius: 40px; cursor: pointer; }
-        .tabs { display: flex; gap: 8px; margin: 16px; flex-wrap: wrap; }
-        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 40px; font-weight: bold; cursor: pointer; background: #f0f2f5; color: #555; font-size: 14px; }
-        .tab.active { background: #2b7a4b; color: white; }
-        .post-form, .auth-form, .profile-form, .lottery-form, .topup-form { background: white; margin: 16px; padding: 20px; border-radius: 28px; }
-        .post-form input, .post-form textarea, .post-form select, .auth-form input, .profile-form input, .lottery-form input, .lottery-form select, .topup-form input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 15px; }
-        .post-form button, .auth-form button, .profile-form button, .lottery-form button, .topup-form button { background: #2b7a4b; color: white; border: none; padding: 12px; width: 100%; border-radius: 32px; font-weight: bold; cursor: pointer; }
-        .product-list { margin: 16px; display: flex; flex-direction: column; gap: 16px; }
-        .product-card { background: white; border-radius: 24px; padding: 16px; }
-        .product-title { font-size: 18px; font-weight: bold; }
-        .product-category { display: inline-block; background: #e9f5ef; color: #2b7a4b; padding: 4px 12px; border-radius: 20px; font-size: 12px; margin: 8px 0; }
-        .product-price { font-size: 22px; font-weight: bold; color: #d9534f; }
-        .product-desc { color: #666; margin: 8px 0; font-size: 14px; }
-        .product-contact { background: #f0f7f3; padding: 10px; border-radius: 20px; margin-top: 10px; font-size: 14px; }
-        .action-buttons { display: flex; gap: 12px; margin: 12px 0; }
-        .like-btn, .share-btn { background: #f0f2f5; border: none; padding: 8px 16px; border-radius: 40px; cursor: pointer; font-size: 14px; }
-        .like-btn.liked { background: #ffebee; color: #e91e63; }
-        .comments-section { margin-top: 12px; border-top: 1px solid #eee; padding-top: 12px; }
-        .comment { background: #f9f9f9; padding: 8px 12px; border-radius: 16px; margin-bottom: 8px; font-size: 13px; }
-        .comment strong { color: #2b7a4b; }
-        .comment-input { display: flex; gap: 8px; margin-top: 8px; }
-        .comment-input input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 24px; outline: none; }
-        .comment-input button { background: #2b7a4b; color: white; border: none; padding: 8px 16px; border-radius: 24px; cursor: pointer; }
-        .delete-btn { background: #ffdddd; border: none; padding: 6px 12px; border-radius: 20px; color: #c0392b; margin-top: 10px; cursor: pointer; }
-        .logout-btn { background: #ddd; border: none; padding: 6px 12px; border-radius: 20px; color: #333; cursor: pointer; }
-        .empty-msg { text-align: center; padding: 40px; color: #aaa; }
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 16px 20px; border-top: 1px solid #eee; flex-wrap: wrap; }
-        .footer button { background: none; border: none; font-size: 14px; font-weight: bold; padding: 8px 12px; border-radius: 40px; cursor: pointer; color: #555; }
-        .footer .active-footer { background: #2b7a4b; color: white; }
-        .hidden { display: none; }
-        .profile-pic { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 10px; }
-        .user-info { display: flex; align-items: center; justify-content: space-between; background: white; margin: 16px; padding: 12px; border-radius: 28px; }
-        .wallet-amount { font-size: 20px; color: #e65100; }
-        .modal { position: fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:1000; }
-        .modal-content { background:white; width:90%; max-width:350px; padding:20px; border-radius:28px; }
-    </style>
-</head>
-<body>
-<div class="header">
-    <div class="logo">🎲</div>
-    <div class="header-text"><h1>ສະບາຍໃຈ</h1><p>ຊື້ຂາຍຫວຍ ແລະ ສິນຄ້າ</p></div>
-</div>
-
-<div id="authSection" class="auth-form">
-    <h3>ເຂົ້າສູ່ລະບົບ / ສະໝັກ</h3>
-    <input type="email" id="email" placeholder="ອີເມວ">
-    <input type="password" id="password" placeholder="ລະຫັດຜ່ານ">
-    <button id="loginBtn">ເຂົ້າສູ່ລະບົບ</button>
-    <button id="registerBtn" style="background:#555;">ສະໝັກ</button>
-    <button id="googleBtn" style="background:#4285F4;">Google</button>
-</div>
-
-<div id="appContent" class="hidden">
-    <div id="userInfo" class="user-info"></div>
-    <div id="walletInfo" class="wallet-bar">💰 ເງິນຄົງເຫຼືອ: <span id="walletAmount">0</span> ກີບ  <button id="topupBtn" style="background:#ff9800; border:none; padding:4px 12px; border-radius:20px;">➕ ເຕີມເງິນ</button></div>
-    
-    <div class="search-box"><input type="text" id="searchInput" placeholder="ຄົ້ນຫາ..."><button id="searchBtn">🔍</button></div>
-    
-    <div class="tabs">
-        <div class="tab active" data-tab="buy">🛒 ຊື້ສິນຄ້າ</div>
-        <div class="tab" data-tab="lottery">🎰 ຫວຍລາວ/ໄທ</div>
-        <div class="tab" data-tab="sell">➕ ຂາຍ</div>
-        <div class="tab" data-tab="profile">👤 ໂປຣຟາຍ</div>
-    </div>
-    
-    <div id="sellPanel" class="hidden"><div class="post-form"><h3>ລົງຂາຍສິນຄ້າ</h3><select id="category"><option value="ລົດ">ລົດ</option><option value="ເບີໂທ">ເບີໂທ</option><option value="ສິນຄ້າທົ່ວໄປ">ທົ່ວໄປ</option></select><input type="text" id="productName" placeholder="ຊື່ສິນຄ້າ"><input type="text" id="price" placeholder="ລາຄາ"><textarea id="description" rows="2" placeholder="ລາຍລະອຽດ"></textarea><input type="text" id="phone" placeholder="ເບີໂທຕິດຕໍ່"><input type="file" id="productImage" accept="image/*"><button id="publishBtn">ລົງຂາຍ</button></div></div>
-    
-    <div id="buyPanel"><div id="productList" class="product-list"></div></div>
-    
-    <div id="lotteryPanel" class="hidden"><div class="lottery-form"><h3>🎰 ຊື້ຫວຍ</h3><select id="lotteryCountry"><option value="ລາວ">ຫວຍລາວ</option><option value="ໄທ">ຫວຍໄທ</option></select><input type="text" id="lotteryNumber" placeholder="ເລກຫວຍ (ເຊັ່ນ: 1234)"><input type="number" id="lotteryAmount" placeholder="ຈຳນວນຫວຍ (ກີບ)"><button id="buyLotteryBtn">ຊື້ຫວຍ</button><h3 style="margin-top:20px">📋 ປະຫວັດການຊື້</h3><div id="lotteryHistory"></div></div></div>
-    
-    <div id="profilePanel" class="hidden"><div class="profile-form"><h3>ແກ້ໄຂໂປຣຟາຍ</h3><input type="text" id="displayName" placeholder="ຊື່ຜູ້ໃຊ້"><input type="file" id="profileImage" accept="image/*"><button id="updateProfileBtn">ອັບເດດ</button><button id="logoutBtn" class="logout-btn">ອອກຈາກລະບົບ</button></div></div>
-</div>
-
-<div id="topupModal" class="hidden modal"><div class="modal-content"><h3>ເຕີມເງິນ</h3><input type="number" id="topupAmount" placeholder="ຈຳນວນເງິນ (ກີບ)"><button id="confirmTopupBtn">ຢືນຢັນ</button><button id="closeTopupBtn" style="background:#999; margin-top:8px;">ປິດ</button></div></div>
-
-<script type="importmap">
-    { "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js", "firebase/auth": "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js", "firebase/storage": "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js" } }
-</script>
-
-<script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, where, getDoc, setDoc } from "firebase/firestore";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
-    const firebaseConfig = { apiKey: "AIzaSyC8CF6_S0EsRFDt99Uhy7ycl35MBfgJfds", authDomain: "sabai-jai-app.firebaseapp.com", projectId: "sabai-jai-app", storageBucket: "sabai-jai-app.firebasestorage.app", messagingSenderId: "998120600338", appId: "1:998120600338:web:d809f6630335c09443f9cb" };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-    const provider = new GoogleAuthProvider();
-
-    let currentUser = null;
-    let products = [];
-
-    async function getUserWallet(uid) { const ref = doc(db, "wallets", uid); const snap = await getDoc(ref); return snap.exists() ? snap.data().balance : 0; }
-    async function updateWallet(uid, amount) { await setDoc(doc(db, "wallets", uid), { balance: amount }, { merge: true }); }
-    async function loadLotteryHistory() { if(!currentUser) return; const q = query(collection(db, "lottery"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc")); const snap = await getDocs(q); document.getElementById('lotteryHistory').innerHTML = snap.docs.map(d => `<div class="comment">${d.data().country} | ເລກ ${d.data().number} | ${d.data().amount} ກີບ | ${new Date(d.data().createdAt).toLocaleString()}</div>`).join('') || '<div>ຍັງບໍ່ມີການຊື້</div>'; }
-    
-    document.getElementById('buyLotteryBtn')?.addEventListener('click', async () => {
-        if(!currentUser) return alert('ກະລຸນາເຂົ້າສູ່ລະບົບກ່ອນ');
-        const country = document.getElementById('lotteryCountry').value;
-        const number = document.getElementById('lotteryNumber').value;
-        const amount = parseInt(document.getElementById('lotteryAmount').value);
-        if(!number || !amount) return alert('ປ້ອນເລກ ແລະ ຈຳນວນເງິນ');
-        let balance = await getUserWallet(currentUser.uid);
-        if(balance < amount) return alert('ເງິນບໍ່ພຽງພໍ, ກະລຸນາເຕີມເງິນກ່ອນ');
-        await updateWallet(currentUser.uid, balance - amount);
-        await addDoc(collection(db, "lottery"), { userId: currentUser.uid, country, number, amount, createdAt: Date.now() });
-        alert('ຊື້ຫວຍສຳເລັດ');
-        document.getElementById('walletAmount').innerText = await getUserWallet(currentUser.uid);
-        loadLotteryHistory();
-    });
-    
-    document.getElementById('topupBtn')?.addEventListener('click', () => { document.getElementById('topupModal').classList.remove('hidden'); });
-    document.getElementById('confirmTopupBtn')?.addEventListener('click', async () => { let amt = parseInt(document.getElementById('topupAmount').value); if(amt && currentUser) { let bal = await getUserWallet(currentUser.uid); await updateWallet(currentUser.uid, bal + amt); document.getElementById('walletAmount').innerText = bal + amt; alert('ເຕີມເງິນສຳເລັດ'); document.getElementById('topupModal').classList.add('hidden'); } });
-    document.getElementById('closeTopupBtn')?.addEventListener('click', () => { document.getElementById('topupModal').classList.add('hidden'); });
-    
-    async function loadProducts() { const q = query(collection(db, "products"), orderBy("createdAt", "desc")); const snapshot = await getDocs(q); products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderProducts(); }
-    
-    async function renderProducts() {
-        const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
-        let filtered = products.filter(p => p.name?.toLowerCase().includes(search));
-        if(filtered.length === 0) { document.getElementById('productList').innerHTML = '<div class="empty-msg">ຍັງບໍ່ມີສິນຄ້າ</div>'; return; }
-        for(let p of filtered) {
-            const likeSnap = await getDocs(query(collection(db, "likes"), where("productId", "==", p.id)));
-            p.likeCount = likeSnap.size;
-            p.userLiked = currentUser ? likeSnap.docs.some(d => d.data().userId === currentUser.uid) : false;
-            const commentsSnap = await getDocs(query(collection(db, "comments"), where("productId", "==", p.id), orderBy("createdAt", "desc")));
-            p.commentsList = commentsSnap.docs.map(c => `<div class="comment"><strong>${c.data().userName}:</strong> ${c.data().text}<br><small>${new Date(c.data().createdAt).toLocaleString()}</small></div>`).join('');
-        }
-        document.getElementById('productList').innerHTML = filtered.map(p => `<div class="product-card"><div class="product-title">${p.name}</div><div class="product-category">${p.category}</div><div class="product-price">💰 ${p.price}</div><div class="product-desc">${p.desc}</div><div class="product-contact">📞 ${p.phone}</div>${p.imageUrl ? `<img src="${p.imageUrl}" style="max-width:100%; border-radius:16px; margin-top:8px;">` : ''}<div class="action-buttons"><button class="like-btn ${p.userLiked ? 'liked' : ''}" data-id="${p.id}">${p.userLiked ? '❤️' : '🤍'} ${p.likeCount}</button><button class="share-btn" data-name="${p.name}" data-price="${p.price}">🔗 ແຊ່</button></div><div class="comments-section"><div class="comment-list">${p.commentsList}</div><div class="comment-input"><input type="text" placeholder="ຂຽນຄຳເຫັນ..." id="commentInput_${p.id}"><button onclick="window.addComment('${p.id}')">ສົ່ງ</button></div></div>${currentUser?.uid === p.userId ? `<button class="delete-btn" data-id="${p.id}">❌ ລຶບ</button>` : ''}</div>`).join('');
-        
-        document.querySelectorAll('.like-btn').forEach(btn => btn.addEventListener('click', async (e) => { if(!currentUser) return alert('ກະລຸນາເຂົ້າສູ່ລະບົບກ່ອນ'); const pid = btn.dataset.id; await addDoc(collection(db, "likes"), { productId: pid, userId: currentUser.uid }); renderProducts(); }));
-        document.querySelectorAll('.share-btn').forEach(btn => btn.addEventListener('click', () => { const name = btn.dataset.name, price = btn.dataset.price; if(navigator.share) navigator.share({ title: name, text: `ສິນຄ້າ: ${name} ລາຄາ ${price}`, url: window.location.href }); else alert('ກົດຄັດລອກລິ້ງ: '+window.location.href); }));
-        document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', async (e) => { await deleteDoc(doc(db, "products", btn.dataset.id)); loadProducts(); }));
-    }
-    
-    window.addComment = async (productId) => { if(!currentUser) return alert('ກະລຸນາເຂົ້າສູ່ລະບົບກ່ອນ'); const text = document.getElementById(`commentInput_${productId}`).value; if(text) await addDoc(collection(db, "comments"), { productId, userId: currentUser.uid, userName: currentUser.displayName || currentUser.email, text, createdAt: Date.now() }); renderProducts(); };
-    
-    document.getElementById('searchBtn')?.addEventListener('click', renderProducts);
-    document.getElementById('publishBtn')?.addEventListener('click', async () => {
-        if(!currentUser) return alert('ກະລຸນາເຂົ້າສູ່ລະບົບກ່ອນ');
-        const name = document.getElementById('productName').value, price = document.getElementById('price').value, desc = document.getElementById('description').value, phone = document.getElementById('phone').value, category = document.getElementById('category').value;
-        if(!name || !price || !phone) return alert('ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບ');
-        let imageUrl = '';
-        const file = document.getElementById('productImage').files[0];
-        if(file) { const storageRef = ref(storage, `products/${Date.now()}_${file.name}`); await uploadBytes(storageRef, file); imageUrl = await getDownloadURL(storageRef); }
-        await addDoc(collection(db, "products"), { name, price, desc, phone, category, imageUrl, userId: currentUser.uid, userEmail: currentUser.email, createdAt: Date.now() });
-        alert('ໂພສສຳເລັດ');
-        loadProducts();
-    });
-    
-    document.getElementById('updateProfileBtn')?.addEventListener('click', async () => { if(!currentUser) return; const newName = document.getElementById('displayName').value; if(newName) await updateProfile(currentUser, { displayName: newName }); const file = document.getElementById('profileImage').files[0]; if(file) { const storageRef = ref(storage, `profiles/${currentUser.uid}`); await uploadBytes(storageRef, file); const url = await getDownloadURL(storageRef); await updateProfile(currentUser, { photoURL: url }); } alert('ອັບເດດສຳເລັດ'); renderUserInfo(); });
-    document.getElementById('logoutBtn')?.addEventListener('click', async () => { await signOut(auth); });
-    
-    function renderUserInfo() { if(!currentUser) return; document.getElementById('userInfo').innerHTML = `<img src="${currentUser.photoURL || 'https://via.placeholder.com/50'}" class="profile-pic"><span class="user-name">${currentUser.displayName || currentUser.email}</span>`; }
-    
-    document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById('sellPanel').classList.add('hidden');
-        document.getElementById('buyPanel').classList.add('hidden');
-        document.getElementById('lotteryPanel').classList.add('hidden');
-        document.getElementById('profilePanel').classList.add('hidden');
-        if(tab.dataset.tab === 'buy') document.getElementById('buyPanel').classList.remove('hidden');
-        if(tab.dataset.tab === 'sell') document.getElementById('sellPanel').classList.remove('hidden');
-        if(tab.dataset.tab === 'lottery') { document.getElementById('lotteryPanel').classList.remove('hidden'); loadLotteryHistory(); }
-        if(tab.dataset.tab === 'profile') document.getElementById('profilePanel').classList.remove('hidden');
-    }));
-    
-    onAuthStateChanged(auth, async (user) => {<!DOCTYPE html>
-<html lang="lo">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ສະບາຍໃຈ - ຫວຍ ແລະ ຊຸມຊົນຂາຍສິນຄ້າ</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
-        body { background: #f5f7fb; padding-bottom: 80px; }
-        .header { background: linear-gradient(135deg, #2b7a4b, #1e5a3a); color: white; padding: 20px 16px; border-radius: 0 0 24px 24px; display: flex; align-items: center; gap: 12px; }
-        .logo { background: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-        .header-text h1 { font-size: 24px; }
-        .header-text p { font-size: 12px; opacity: 0.9; }
-        .wallet-bar { background: #ffe0b2; margin: 12px 16px; padding: 10px 16px; border-radius: 40px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; color: #e65100; }
-        .search-box { background: white; margin: -20px 16px 16px; padding: 8px 16px; border-radius: 48px; display: flex; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .search-box input { flex: 1; border: none; padding: 12px 0; font-size: 16px; outline: none; }
-        .search-box button { background: #2b7a4b; border: none; color: white; padding: 8px 18px; border-radius: 40px; cursor: pointer; }
-        .tabs { display: flex; gap: 8px; margin: 16px; flex-wrap: wrap; }
-        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 40px; font-weight: bold; cursor: pointer; background: #f0f2f5; color: #555; font-size: 14px; }
-        .tab.active { background: #2b7a4b; color: white; }
-        .post-form, .auth-form, .profile-form, .lottery-form, .topup-form { background: white; margin: 16px; padding: 20px; border-radius: 28px; }
-        .post-form input, .post-form textarea, .post-form select, .auth-form input, .profile-form input, .lottery-form input, .lottery-form select, .topup-form input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 15px; }
-        .post-form button, .auth-form button, .profile-form button, .lottery-form button, .topup-form button { background: #2b7a4b; color: white; border: none; padding: 12px; width: 100%; border-radius: 32px; font-weight: bold; cursor: pointer; }
-        .product-list { margin: 16px; display: flex; flex-direction: column; gap: 16px; }
-        .product-card { background: white; border-radius: 24px; padding: 16px; }
-        .product-title { font-size: 18px; font-weight: bold; }
-        .product-category { display: inline-block; background: #e9f5ef; color: #2b7a4b; padding: 4px 12px; border-radius: 20px; font-size: 12px; margin: 8px 0; }
-        .product-price { font-size: 22px; font-weight: bold; color: #d9534f; }
-        .product-desc { color: #666; margin: 8px 0; font-size: 14px; }
-        .product-contact { background: #f0f7f3; padding: 10px; border-radius: 20px; margin-top: 10px; font-size: 14px; }
-        .action-buttons { display: flex; gap: 12px; margin: 12px 0; }
-        .like-btn, .share-btn { background: #f0f2f5; border: none; padding: 8px 16px; border-radius: 40px; cursor: pointer; font-size: 14px; }
-        .like-btn.liked { background: #ffebee; color: #e91e63; }
-        .comments-section { margin-top: 12px; border-top: 1px solid #eee; padding-top: 12px; }
-        .comment { background: #f9f9f9; padding: 8px 12px; border-radius: 16px; margin-bottom: 8px; font-size: 13px; }
-        .comment strong { color: #2b7a4b; }
-        .comment-input { display: flex; gap: 8px; margin-top: 8px; }
-        .comment-input input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 24px; outline: none; }
-        .comment-input button { background: #2b7a4b; color: white; border: none; padding: 8px 16px; border-radius: 24px; cursor: pointer; }
-        .delete-btn { background: #ffdddd; border: none; padding: 6px 12px; border-radius: 20px; color: #c0392b; margin-top: 10px; cursor: pointer; }
-        .logout-btn { background: #ddd; border: none; padding: 6px 12px; border-radius: 20px; color: #333; cursor: pointer; }
-        .empty-msg { text-align: center; padding: 40px; color: #aaa; }
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 16px 20px; border-top: 1px solid #eee; flex-wrap: wrap; }
-        .footer button { background: none; border: none; font-size: 14px; font-weight: bold; padding: 8px 12px; border-radius: 40px; cursor: pointer; color: #555; }
-        .footer .active-footer { background: #2b7a4b; color: white; }
-        .hidden { display: none; }
-        .profile-pic { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 10px; }
-        .user-info { display: flex; align-items: center; justify-content: space-between; background: white; margin: 16px; padding: 12px; border-radius: 28px; }
-        .wallet-amount { font-size: 20px; color: #e65100; }
-        .modal { position: fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:1000; }
-        .modal-content { background:white; width:90%; max-width:350px; padding:20px; border-radius:28px; }
-    </style>
-</head>
-<body>
-<div class="header">
-    <div class="logo">🎲</div>
-    <div class="header-text"><h1>ສະບາຍໃຈ</h1><p>ຊື້ຂາຍຫວຍ ແລະ ສິນຄ້າ</p></div>
-</div>
-
-<div id="authSection" class="auth-form">
-    <h3>ເຂົ້າສູ່ລະບົບ / ສະໝັກ</h3>
-    <input type="email" id="email" placeholder="ອີເມວ">
-    <input type="password" id="password" placeholder="ລະຫັດຜ່ານ">
-    <button id="loginBtn">ເຂົ້າສູ່ລະບົບ</button>
-    <button id="registerBtn" style="background:#555;">ສະໝັກ</button>
-    <button id="googleBtn" style="background:#4285F4;">Google</button>
-</div>
-
-<div id="appContent" class="hidden">
-    <div id="userInfo" class="user-info"></div>
-    <div id="walletInfo" class="wallet-bar">💰 ເງິນຄົງເຫຼືອ: <span id="walletAmount">0</span> ກີບ  <button id="topupBtn" style="background:#ff9800; border:none; padding:4px 12px; border-radius:20px;">➕ ເຕີມເງິນ</button></div>
-    
-    <div class="search-box"><input type="text" id="searchInput" placeholder="ຄົ້ນຫາ..."><button id="searchBtn">🔍</button></div>
-    
-    <div class="tabs">
-        <div class="tab active" data-tab="buy">🛒 ຊື້ສິນຄ້າ</div>
-        <div class="tab" data-tab="lottery">🎰 ຫວຍລາວ/ໄທ</div>
-        <div class="tab" data-tab="sell">➕ ຂາຍ</div>
-        <div class="tab" data-tab="profile">👤 ໂປຣຟາຍ</div>
-    </div>
-    
-    <div id="sellPanel" class="hidden"><div class="post-form"><h3>ລົງຂາຍສິນຄ້າ</h3><select id="category"><option value="ລົດ">ລົດ</option><option value="ເບີໂທ">ເບີໂທ</option><option value="ສິນຄ້າທົ່ວໄປ">ທົ່ວໄປ</option></select><input type="text" id="productName" placeholder="ຊື່ສິນຄ້າ"><input type="text" id="price" placeholder="ລາຄາ"><textarea id="description" rows="2" placeholder="ລາຍລະອຽດ"></textarea><input type="text" id="phone" placeholder="ເບີໂທຕິດຕໍ່"><input type="file" id="productImage" accept="image/*"><button id="publishBtn">ລົງຂາຍ</button></div></div>
-    
-    <div id="buyPanel"><div id="productList" class="product-list"></div></div>
-    
-    <div id="lotteryPanel" class="hidden"><div class="lottery-form"><h3>🎰 ຊື້ຫວຍ</h3><select id="lotteryCountry"><option value="ລາວ">ຫວຍລາວ</option><option value="ໄທ">ຫວຍໄທ</option></select><input type="text" id="lotteryNumber" placeholder="ເລກຫວຍ (ເຊັ່ນ: 1234)"><input type="number" id="lotteryAmount" placeholder="ຈຳນວນຫວຍ (ກີບ)"><button id="buyLotteryBtn">ຊື້ຫວຍ</button><h3 style="margin-top:20px">📋 ປະຫວັດການຊື້</h3><div id="lotteryHistory"></div></div></div>
-    
-    <div id="profilePanel" class="hidden"><div class="profile-form"><h3>ແກ້ໄຂໂປຣຟາຍ</h3><input type="text" id="displayName" placeholder="ຊື່ຜູ້ໃຊ້"><input type="file" id="profileImage" accept="image/*"><button id="updateProfileBtn">ອັບເດດ</button><button id="logoutBtn" class="logout-btn">ອອກຈາກລະບົບ</button></div></div><!DOCTYPE html>
-    
-<html lang="lo">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ສະບາຍໃຈ - ຊຸມຊົນຂາຍສິນຄ້າ</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
-        body { background: #f5f7fb; padding-bottom: 80px; }
-        .header { background: linear-gradient(135deg, #2b7a4b, #1e5a3a); color: white; padding: 20px 16px; border-radius: 0 0 24px 24px; display: flex; align-items: center; gap: 12px; }
-        .logo { background: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; }
-        .header-text h1 { font-size: 24px; }
-        .wallet-bar { background: #ffe0b2; margin: 12px 16px; padding: 10px 16px; border-radius: 40px; display: flex; justify-content: space-between; align-items: center; }
-        .search-box { background: white; margin: -20px 16px 16px; padding: 8px 16px; border-radius: 48px; display: flex; gap: 10px; }
-        .search-box input { flex: 1; border: none; padding: 12px 0; font-size: 16px; outline: none; }
-        .search-box button { background: #2b7a4b; border: none; color: white; padding: 8px 18px; border-radius: 40px; cursor: pointer; }
-        .tabs { display: flex; gap: 8px; margin: 16px; flex-wrap: wrap; }
-        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 40px; font-weight: bold; cursor: pointer; background: #f0f2f5; color: #555; }
-        .tab.active { background: #2b7a4b; color: white; }
-        .post-form, .auth-form, .profile-form { background: white; margin: 16px; padding: 20px; border-radius: 28px; }
-        .post-form input, .post-form textarea, .post-form select, .auth-form input, .profile-form input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 20px; }
-        .post-form button, .auth-form button, .profile-form button { background: #2b7a4b; color: white; border: none; padding: 12px; width: 100%; border-radius: 32px; font-weight: bold; cursor: pointer; }
-        .product-list { margin: 16px; display: flex; flex-direction: column; gap: 16px; }
-        .product-card { background: white; border-radius: 24px; padding: 16px; }
-        .product-title { font-size: 18px; font-weight: bold; }
-        .product-price { font-size: 22px; font-weight: bold; color: #d9534f; margin: 8px 0; }
-        .product-contact { background: #f0f7f3; padding: 10px; border-radius: 20px; margin: 10px 0; }
-        .action-buttons { display: flex; gap: 12px; margin: 12px 0; }
-        .like-btn, .share-btn { background: #f0f2f5; border: none; padding: 8px 16px; border-radius: 40px; cursor: pointer; }
-        .like-btn.liked { background: #ffebee; color: #e91e63; }
-        .comments-section { border-top: 1px solid #eee; padding-top: 12px; margin-top: 8px; }
-        .comment { background: #f9f9f9; padding: 8px 12px; border-radius: 16px; margin-bottom: 8px; font-size: 13px; }
-        .comment-input { display: flex; gap: 8px; margin-top: 8px; }
-        .comment-input input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 24px; }
-        .comment-input button { background: #2b7a4b; color: white; border: none; padding: 8px 16px; border-radius: 24px; cursor: pointer; }
-        .delete-btn { background: #ffdddd; border: none; padding: 6px 12px; border-radius: 20px; color: #c0392b; margin-top: 10px; cursor: pointer; }
-        .user-info { display: flex; align-items: center; justify-content: space-between; background: white; margin: 16px; padding: 12px; border-radius: 28px; }
-        .profile-pic { width: 50px; height: 50px; border-radius: 50%; margin-right: 10px; }
-        .hidden { display: none; }
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 16px 20px; border-top: 1px solid #eee; }
-        .footer button { background: none; border: none; font-size: 14px; font-weight: bold; padding: 8px 12px; border-radius: 40px; cursor: pointer; }
-        .footer .active-footer { background: #2b7a4b; color: white; }
-    </style>
-</head>
-<body>
-<div class="header"><div class="logo">😊</div><div class="header-text"><h1>ສະບາຍໃຈ</h1><p>ຊຸມຊົນຂາຍສິນຄ້າ</p></div></div>
-
-<div id="authSection" class="auth-form">
-    <h3>ເຂົ້າສູ່ລະບົບ / ສະໝັກ</h3>
-    <input type="email" id="email" placeholder="ອີເມວ">
-    <input type="password" id="password" placeholder="ລະຫັດຜ່ານ">
-    <button id="loginBtn">ເຂົ້າສູ່ລະບົບ</button>
-    <button id="registerBtn" style="background:#555;">ສະໝັກ</button>
-    <button id="googleBtn" style="background:#4285F4;">Google</button>
-</div>
-
-<div id="appContent" class="hidden">
-    <div id="userInfo" class="user-info"></div><!DOCTYPE html>
-<html lang="lo">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ສະບາຍໃຈ - ຊຸມຊົນຂາຍສິນຄ້າ</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
-        body { background: #f5f7fb; padding-bottom: 80px; }
-        .header { background: linear-gradient(135deg, #2b7a4b, #1e5a3a); color: white; padding: 20px 16px; border-radius: 0 0 24px 24px; display: flex; align-items: center; gap: 12px; }
-        .logo { background: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; }
-        .header-text h1 { font-size: 24px; }
-        .wallet-bar { background: #ffe0b2; margin: 12px 16px; padding: 10px 16px; border-radius: 40px; display: flex; justify-content: space-between; align-items: center; }
-        .search-box { background: white; margin: -20px 16px 16px; padding: 8px 16px; border-radius: 48px; display: flex; gap: 10px; }
-        .search-box input { flex: 1; border: none; padding: 12px 0; font-size: 16px; outline: none; }
-        .search-box button { background: #2b7a4b; border: none; color: white; padding: 8px 18px; border-radius: 40px; cursor: pointer; }
-        .tabs { display: flex; gap: 8px; margin: 16px; flex-wrap: wrap; }
-        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 40px; font-weight: bold; cursor: pointer; background: #f0f2f5; color: #555; }
-        .tab.active { background: #2b7a4b; color: white; }
-        .post-form, .auth-form, .profile-form { background: white; margin: 16px; padding: 20px; border-radius: 28px; }
-        .post-form input, .post-form textarea, .post-form select, .auth-form input, .profile-form input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 20px; }
-        .post-form button, .auth-form button, .profile-form button { background: #2b7a4b; color: white; border: none; padding: 12px; width: 100%; border-radius: 32px; font-weight: bold; cursor: pointer; }
-        .product-list { margin: 16px; display: flex; flex-direction: column; gap: 16px; }
-        .product-card { background: white; border-radius: 24px; padding: 16px; }
-        .product-title { font-size: 18px; font-weight: bold; }
-        .product-price { font-size: 22px; font-weight: bold; color: #d9534f; margin: 8px 0; }
-        .product-contact { background: #f0f7f3; padding: 10px; border-radius: 20px; margin: 10px 0; }
-        .action-buttons { display: flex; gap: 12px; margin: 12px 0; }
-        .like-btn, .share-btn { background: #f0f2f5; border: none; padding: 8px 16px; border-radius: 40px; cursor: pointer; }
-        .like-btn.liked { background: #ffebee; color: #e91e63; }
-        .comments-section { border-top: 1px solid #eee; padding-top: 12px; margin-top: 8px; }
-        .comment { background: #f9f9f9; padding: 8px 12px; border-radius: 16px; margin-bottom: 8px; font-size: 13px; }
-        .comment-input { display: flex; gap: 8px; margin-top: 8px; }
-        .comment-input input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 24px; }
-        .comment-input button { background: #2b7a4b; color: white; border: none; padding: 8px 16px; border-radius: 24px; cursor: pointer; }
-        .delete-btn { background: #ffdddd; border: none; padding: 6px 12px; border-radius: 20px; color: #c0392b; margin-top: 10px; cursor: pointer; }
-        .user-info { display: flex; align-items: center; justify-content: space-between; background: white; margin: 16px; padding: 12px; border-radius: 28px; }
-        .profile-pic { width: 50px; height: 50px; border-radius: 50%; margin-right: 10px; }
-        .hidden { display: none; }
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 16px 20px; border-top: 1px solid #eee; }
-        .footer button { background: none; border: none; font-size: 14px; font-weight: bold; padding: 8px 12px; border-radius: 40px; cursor: pointer; }
-        .footer .active-footer { background: #2b7a4b; color: white; }
-        .modal { position: fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:1000; }
-        .modal-content { background:white; padding:20px; border-radius:28px; width:90%; max-width:350px; }
-    </style>
-</head>
-<body>
-<div class="header"><div class="logo">😊</div><div class="header-text"><h1>ສະບາຍໃຈ</h1><p>ຊຸມຊົນຂາຍສິນຄ້າ</p></div></div>
-
-<div id="authSection" class="auth-form">
-    <h3>ເຂົ້າສູ່ລະບົບ / ສະໝັກ</h3>
-    <input type="email" id="email" placeholder="ອີເມວ">
-    <input type="password" id="password" placeholder="ລະຫັດຜ່ານ">
-    <button id="loginBtn">ເຂົ້າສູ່ລະບົບ</button><!DOCTYPE html>
-<html lang="lo">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ສະບາຍໃຈ - ຕະຫຼາດຫວຍ ລາວ ແລະ ໄທ</title>
+    <title>ສະບາຍໃຈ - ສັ່ງຊື້ຫວຍລາວ/ໄທ</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
         body { background: #f5f7fb; padding-bottom: 80px; }
         .header { background: linear-gradient(135deg, #d32f2f, #b71c1c); color: white; padding: 20px 16px; border-radius: 0 0 24px 24px; text-align: center; }
         .header h1 { font-size: 28px; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .header p { font-size: 14px; opacity: 0.9; margin-top: 6px; }
-        .search-box { background: white; margin: -20px 16px 16px; padding: 8px 16px; border-radius: 48px; display: flex; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .search-box input { flex: 1; border: none; padding: 12px 0; font-size: 16px; outline: none; }
-        .search-box button { background: #d32f2f; border: none; color: white; padding: 8px 18px; border-radius: 40px; cursor: pointer; }
-        .tabs { display: flex; gap: 12px; margin: 16px; background: white; padding: 6px; border-radius: 48px; }
-        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 40px; font-weight: bold; cursor: pointer; background: #f0f2f5; color: #555; }
-        .tab.active { background: #d32f2f; color: white; }
-        .post-form, .auth-form { background: white; margin: 16px; padding: 20px; border-radius: 28px; }
-        .post-form input, .post-form textarea, .post-form select, .auth-form input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 15px; }
-        .post-form button, .auth-form button { background: #d32f2f; color: white; border: none; padding: 12px; width: 100%; border-radius: 32px; font-weight: bold; cursor: pointer; }
-        .product-list { margin: 16px; display: flex; flex-direction: column; gap: 16px; }
-        .product-card { background: white; border-radius: 24px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .product-title { font-size: 20px; font-weight: bold; color: #d32f2f; }
-        .product-category { display: inline-block; background: #ffebee; color: #d32f2f; padding: 4px 12px; border-radius: 20px; font-size: 12px; margin: 8px 0; }
-        .product-price { font-size: 24px; font-weight: bold; color: #2e7d32; margin: 6px 0; }
-        .product-desc { color: #666; margin: 8px 0; font-size: 14px; }
-        .product-contact { background: #e3f2fd; padding: 10px; border-radius: 20px; margin-top: 10px; font-size: 14px; color: #1565c0; word-break: break-all; }
-        .delete-btn { background: #ffdddd; border: none; padding: 6px 12px; border-radius: 20px; color: #c0392b; margin-top: 10px; cursor: pointer; font-size: 12px; }
+        .cart-bar { background: #fff3e0; margin: 16px; padding: 12px 16px; border-radius: 40px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+        .cart-count { background: #d32f2f; color: white; padding: 4px 12px; border-radius: 20px; }
+        .checkout-btn { background: #2e7d32; color: white; border: none; padding: 10px 20px; border-radius: 40px; cursor: pointer; font-weight: bold; }
+        .form-box { background: white; margin: 16px; padding: 20px; border-radius: 28px; }
+        .form-box h3 { margin-bottom: 16px; color: #b71c1c; }
+        .form-box select, .form-box input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 16px; }
+        .form-box button { background: #d32f2f; color: white; border: none; padding: 12px; width: 100%; border-radius: 32px; font-weight: bold; cursor: pointer; }
+        .cart-list { margin: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .cart-item { background: white; border-radius: 20px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .cart-item-info { flex: 1; }
+        .cart-item-number { font-weight: bold; font-size: 18px; color: #d32f2f; }
+        .remove-btn { background: #ffdddd; border: none; padding: 6px 12px; border-radius: 20px; color: #c0392b; cursor: pointer; }
         .empty-msg { text-align: center; padding: 40px; color: #aaa; }
+        .total-row { background: #fff3e0; margin: 16px; padding: 16px; border-radius: 20px; font-size: 20px; font-weight: bold; text-align: right; }
+        .method-buttons { display: flex; gap: 12px; margin: 16px; }
+        .method-buttons button { flex: 1; padding: 14px; border-radius: 40px; font-weight: bold; cursor: pointer; border: none; }
+        .fb-btn { background: #1877f2; color: white; }
+        .wa-btn { background: #25d366; color: white; }
         .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 16px 20px; border-top: 1px solid #eee; }
-        .footer button { background: none; border: none; font-size: 18px; font-weight: bold; padding: 10px 20px; border-radius: 40px; cursor: pointer; color: #555; }
-        .footer .active-footer { background: #d32f2f; color: white; }
+        .footer button { background: none; border: none; font-size: 16px; font-weight: bold; padding: 8px 16px; border-radius: 40px; cursor: pointer; color: #555; }
+        .footer .active { background: #d32f2f; color: white; }
         .hidden { display: none; }
-        .info-note { background: #fff3e0; margin: 16px; padding: 12px; border-radius: 16px; font-size: 13px; color: #e65100; text-align: center; }
+        .seller-info { background: #e3f2fd; margin: 16px; padding: 12px; border-radius: 20px; font-size: 14px; }
+        .seller-info textarea { width: 100%; padding: 8px; border-radius: 16px; border: 1px solid #ccc; margin-top: 8px; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1><span>🎰</span> ສະບາຍໃຈ ຫວຍ</h1>
-    <p>ຕະຫຼາດຊື້-ຂາຍເລກຫວຍ ລາວ ແລະ ໄທ — ໂພສຟຣີ ຕິດຕໍ່ໂດຍກົງ</p>
+    <h1><span>🎰</span> ສະບາຍໃຈ ສັ່ງຊື້ຫວຍ</h1>
+    <p>ເລືອກຫວຍລາວ/ໄທ ປ້ອນເລກ ກຳນົດເງິນ ສົ່ງຄຳສັ່ງຜ່ານ Messenger ຫຼື WhatsApp</p>
 </div>
 
-<div class="info-note">
-    📢 ຜູ້ຊື້ສາມາດຕິດຕໍ່ຜູ້ຂາຍໄດ້ໂດຍກົງທາງເບີໂທ ຫຼື ລິ້ງແອັບທີ່ລົງໄວ້
+<div class="seller-info">
+    📢 ຂໍ້ມູນຜູ້ຂາຍ (ປ່ຽນເປັນຂອງທ່ານ):
+    <textarea id="sellerInfo" rows="2">ຮ້ານຫວຍສະບາຍໃຈ
+ເບີໂທ: 020 98297792
+ບໍລິການສັ່ງຊື້ຫວຍອອນລາຍ</textarea>
 </div>
 
-<div class="search-box">
-    <input type="text" id="searchInput" placeholder="ຄົ້ນຫາເລກຫວຍ... (ຕົວຢ່າງ: 1234, 5678)">
-    <button id="searchBtn">🔍 ຄົ້ນຫາ</button>
+<div class="cart-bar">
+    <span>🛒 ກະຕ່າຂອງຂ້ອຍ</span>
+    <span class="cart-count" id="cartCount">0</span>
+    <button class="checkout-btn" id="checkoutBtn">💬 ສັ່ງຊື້</button>
 </div>
 
-<div class="tabs">
-    <div class="tab active" data-tab="buy">🎯 ຊື້ເລກຫວຍ</div>
-    <div class="tab" data-tab="sell">➕ ລົງຂາຍເລກຫວຍ</div>
+<div class="form-box">
+    <h3>➕ ເພີ່ມເລກຫວຍ</h3>
+    <select id="lotteryType">
+        <option value="ຫວຍລາວ">🇱🇦 ຫວຍລາວ</option>
+        <option value="ຫວຍໄທ">🇹🇭 ຫວຍໄທ</option>
+    </select>
+    <input type="text" id="lotteryNumber" placeholder="ເລກຫວຍ (ເຊັ່ນ: 1234, 56789)">
+    <input type="number" id="betAmount" placeholder="ຈຳນວນເງິນທີ່ຊື້ (ກີບ)" value="1000">
+    <button id="addToCartBtn">➕ ເພີ່ມ</button>
 </div>
 
-<div id="sellPanel" class="hidden">
-    <div class="post-form">
-        <h3>📦 ລົງຂາຍເລກຫວຍ</h3>
-        <select id="category">
-            <option value="ຫວຍລາວ">🇱🇦 ຫວຍລາວ</option>
-            <option value="ຫວຍໄທ">🇹🇭 ຫວຍໄທ</option>
-        </select>
-        <input type="text" id="lotteryNumber" placeholder="ເລກຫວຍ (ເຊັ່ນ: 1234, 56789)">
-        <input type="text" id="price" placeholder="ລາຄາຂາຍ (ກີບ)">
-        <textarea id="description" rows="2" placeholder="ລາຍລະອຽດເພີ່ມ (ງວດ, ວັນທີ, ຯລຯ)"></textarea>
-        <input type="text" id="phone" placeholder="ເບີໂທຕິດຕໍ່ ຫຼື ລິ້ງແອັບ (WhatsApp, FB, Telegram...)">
-        <button id="publishBtn">✅ ລົງຂາຍດ່ວນ</button>
-    </div>
+<div id="cartPanel">
+    <div id="cartList" class="cart-list"></div>
+    <div class="total-row">💰 ລວມທັງໝົດ: <span id="totalAmount">0</span> ກີບ</div>
 </div>
 
-<div id="buyPanel">
-    <div id="productList" class="product-list"></div>
+<div class="method-buttons">
+    <button id="sendFBBtn" class="fb-btn">📘 ສົ່ງຜ່ານ Messenger</button>
+    <button id="sendWABtn" class="wa-btn">💚 ສົ່ງຜ່ານ WhatsApp</button>
 </div>
 
 <div class="footer">
-    <button id="footerBuyBtn" class="active-footer">🎯 ຊື້ຫວຍ</button>
-    <button id="footerSellBtn">➕ ຂາຍຫວຍ</button>
+    <button id="footerCartBtn" class="active">🛒 ສັ່ງຊື້</button>
 </div>
 
 <script>
-    // ຂໍ້ມູນຕົ້ນແບບ
-    let products = [
-        {
-            id: "p1",
-            category: "ຫວຍລາວ",
-            number: "1234",
-            price: "50,000 ກີບ",
-            desc: "ຫວຍລາວ ງວດ 16/6/68",
-            phone: "020 12345678",
-            date: Date.now()
-        },
-        {
-            id: "p2",
-            category: "ຫວຍໄທ",
-            number: "56789",
-            price: "80,000 ກີບ",
-            desc: "ຫວຍໄທ ງວດ 1/7/68",
-            phone: "020 98765432",
-            date: Date.now()
-        },
-        {
-            id: "p3",
-            category: "ຫວຍລາວ",
-            number: "7890",
-            price: "40,000 ກີບ",
-            desc: "ຫວຍລາວ ງວດ ໃໝ່",
-            phone: "020 55554444",
-            date: Date.now()
-        }
-    ];
+    let cart = [];
 
-    function saveToLocal() {
-        localStorage.setItem("sabaiLottery", JSON.stringify(products));
+    function saveCart() {
+        localStorage.setItem("lottery_cart", JSON.stringify(cart));
+        renderCart();
     }
 
-    function loadFromLocal() {
-        const stored = localStorage.getItem("sabaiLottery");
-        if (stored) {
-            products = JSON.parse(stored);
-        } else {
-            saveToLocal();
-        }
+    function loadCart() {
+        const stored = localStorage.getItem("lottery_cart");
+        if(stored) cart = JSON.parse(stored);
+        renderCart();
     }
 
-    let currentFilter = "";
-    function renderProducts() {
-        const container = document.getElementById("productList");
-        let filtered = [...products];
-        if (currentFilter !== "") {
-            filtered = filtered.filter(p => 
-                p.number.toLowerCase().includes(currentFilter.toLowerCase()) ||
-                p.category.toLowerCase().includes(currentFilter.toLowerCase())
-            );
-        }
-        filtered.sort((a,b) => b.date - a.date);
-
-        if (filtered.length === 0) {
-            container.innerHTML = `<div class="empty-msg">😢 ຍັງບໍ່ມີເລກຫວຍທີ່ລົງຂາຍ ຫຼື ບໍ່ພົບເລກທີ່ທ່ານຄົ້ນຫາ</div>`;
+    function renderCart() {
+        const container = document.getElementById("cartList");
+        const cartCount = document.getElementById("cartCount");
+        const totalSpan = document.getElementById("totalAmount");
+        
+        if(cart.length === 0) {
+            container.innerHTML = '<div class="empty-msg">😢 ຍັງບໍ່ມີລາຍການໃນກະຕ່າ</div>';
+            cartCount.innerText = "0";
+            totalSpan.innerText = "0";
             return;
         }
-
-        container.innerHTML = filtered.map(p => `
-            <div class="product-card">
-                <div class="product-title">🔢 ${escapeHtml(p.number)}</div>
-                <div class="product-category">${p.category}</div>
-                <div class="product-price">💰 ${p.price}</div>
-                <div class="product-desc">📝 ${escapeHtml(p.desc)}</div>
-                <div class="product-contact">📞 ຕິດຕໍ່: ${escapeHtml(p.phone)}</div>
-                <button class="delete-btn" data-id="${p.id}">❌ ລຶບໂພສ (ສຳລັບເຈົ້າຂອງ)</button>
-            </div>
-        `).join("");
-
-        document.querySelectorAll(".delete-btn").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                const id = btn.getAttribute("data-id");
-                products = products.filter(p => p.id !== id);
-                saveToLocal();
-                renderProducts();
+        
+        let total = 0;
+        container.innerHTML = cart.map((item, index) => {
+            total += item.amount;
+            return `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <div class="cart-item-number">🔢 ${item.number}</div>
+                        <div>${item.type} | ຈຳນວນ: ${item.amount.toLocaleString()} ກີບ</div>
+                    </div>
+                    <button class="remove-btn" data-index="${index}">❌ ລຶບ</button>
+                </div>
+            `;
+        }).join('');
+        
+        cartCount.innerText = cart.length;
+        totalSpan.innerText = total.toLocaleString();
+        
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx = parseInt(btn.dataset.index);
+                cart.splice(idx, 1);
+                saveCart();
             });
         });
     }
 
-    function escapeHtml(str) {
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-
-    function publishProduct() {
-        const category = document.getElementById("category").value;
+    function addToCart() {
+        const type = document.getElementById("lotteryType").value;
         const number = document.getElementById("lotteryNumber").value.trim();
-        const price = document.getElementById("price").value.trim();
-        const desc = document.getElementById("description").value.trim();
-        const phone = document.getElementById("phone").value.trim();
-
-        if (!number || !price || !phone) {
-            alert("ກະລຸນາປ້ອນ ເລກຫວຍ, ລາຄາ ແລະ ເບີໂທຕິດຕໍ່ກ່ອນ");
+        const amount = parseInt(document.getElementById("betAmount").value);
+        
+        if(!number) {
+            alert("ກະລຸນາປ້ອນເລກຫວຍ");
             return;
         }
-
-        const newProduct = {
-            id: Date.now() + "" + Math.floor(Math.random() * 10000),
-            category: category,
-            number: number,
-            price: price,
-            desc: desc || "ບໍ່ມີລາຍລະອຽດເພີ່ມ",
-            phone: phone,
-            date: Date.now()
-        };
-        products.unshift(newProduct);
-        saveToLocal();
-        renderProducts();
-
-        // ລ້າງຟອມ
+        if(isNaN(amount) || amount < 1000) {
+            alert("ຈຳນວນເງິນຕ້ອງຫຼາຍກວ່າ 1,000 ກີບ");
+            return;
+        }
+        
+        cart.push({ type, number, amount, date: Date.now() });
+        saveCart();
+        
         document.getElementById("lotteryNumber").value = "";
-        document.getElementById("price").value = "";
-        document.getElementById("description").value = "";
-        document.getElementById("phone").value = "";
-
-        showBuyPanel();
-        alert("✅ ລົງຂາຍເລກຫວຍສຳເລັດ!");
+        document.getElementById("betAmount").value = "1000";
+        alert("✅ ເພີ່ມເຂົ້າກະຕ່າແລ້ວ");
     }
 
-    function showBuyPanel() {
-        document.getElementById("sellPanel").classList.add("hidden");
-        document.getElementById("buyPanel").classList.remove("hidden");
-        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-        document.querySelector("[data-tab='buy']").classList.add("active");
-        document.getElementById("footerBuyBtn").classList.add("active-footer");
-        document.getElementById("footerSellBtn").classList.remove("active-footer");
-        renderProducts();
-    }
-
-    function showSellPanel() {
-        document.getElementById("sellPanel").classList.remove("hidden");
-        document.getElementById("buyPanel").classList.add("hidden");
-        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-        document.querySelector("[data-tab='sell']").classList.add("active");
-        document.getElementById("footerSellBtn").classList.add("active-footer");
-        document.getElementById("footerBuyBtn").classList.remove("active-footer");
-    }
-
-    // Event listeners
-    document.getElementById("searchBtn").addEventListener("click", () => {
-        currentFilter = document.getElementById("searchInput").value.trim();
-        renderProducts();
-        showBuyPanel();
-    });
-    document.getElementById("searchInput").addEventListener("keyup", (e) => {
-        if(e.key === "Enter") {
-            currentFilter = e.target.value.trim();
-            renderProducts();
-            showBuyPanel();
-        }
-    });
-
-    document.querySelectorAll(".tab").forEach(tab => {
-        tab.addEventListener("click", () => {
-            if(tab.dataset.tab === "buy") showBuyPanel();
-            else showSellPanel();
+    function getOrderMessage() {
+        const sellerInfo = document.getElementById("sellerInfo").value;
+        const date = new Date().toLocaleString('lo-LA');
+        let total = 0;
+        let itemsList = "";
+        
+        cart.forEach((item, idx) => {
+            total += item.amount;
+            itemsList += `%0A🔹 ${idx+1}. ${item.type} | ເລກ: ${item.number} | ${item.amount.toLocaleString()} ກີບ`;
         });
-    });
-
-    document.getElementById("footerBuyBtn").addEventListener("click", showBuyPanel);
-    document.getElementById("footerSellBtn").addEventListener("click", showSellPanel);
-    document.getElementById("publishBtn").addEventListener("click", publishProduct);
-
-    // ເລີ່ມຕົ້ນ
-    loadFromLocal();
-    renderProducts();
-    showBuyPanel();
-</script>
-</body>
-</html>
-    <button id="registerBtn" style="background:#555;">ສະໝັກ</button>
-    <button id="googleBtn" style="background:#4285F4;">Google</button>
-</div>
-
-<div id="appContent" class="hidden">
-    <div id="userInfo" class="user-info"></div>
-    <div class="wallet-bar">💰 ເງິນ: <span id="walletAmount">0</span> ກີບ <button id="topupBtn" style="background:#ff9800; border:none; padding:4px 12px; border-radius:20px;">➕ ເຕີມ</button></div>
-    <div class="search-box"><input type="text" id="searchInput" placeholder="ຄົ້ນຫາ..."><button id="searchBtn">🔍</button></div>
-    <div class="tabs"><div class="tab active" data-tab="buy">🛒 ຊື້</div><div class="tab" data-tab="sell">➕ ຂາຍ</div><div class="tab" data-tab="profile">👤 ໂປຣຟາຍ</div></div>
-    <div id="sellPanel" class="hidden"><div class="post-form"><h3>ລົງຂາຍສິນຄ້າ</h3><select id="category"><option value="ລົດ">ລົດ</option><option value="ເບີໂທ">ເບີໂທ</option><option value="ສິນຄ້າທົ່ວໄປ">ທົ່ວໄປ</option></select><input type="text" id="productName" placeholder="ຊື່ສິນຄ້າ"><input type="text" id="price" placeholder="ລາຄາ"><textarea id="description" rows="2" placeholder="ລາຍລະອຽດ"></textarea><input type="text" id="phone" placeholder="ເບີໂທຕິດຕໍ່"><input type="file" id="productImage" accept="image/*"><button id="publishBtn">ລົງຂາຍ</button></div></div>
-    <div id="buyPanel"><div id="productList" class="product-list"></div></div>
-    <div id="profilePanel" class="hidden"><div class="profile-form"><h3>ແກ້ໄຂໂປຣຟາຍ</h3><input type="text" id="displayName" placeholder="ຊື່ຜູ້ໃຊ້"><input type="file" id="profileImage" accept="image/*"><button id="updateProfileBtn">ອັບເດດ</button><button id="logoutBtn" style="background:#ddd; margin-top:8px;">ອອກຈາກລະບົບ</button></div></div>
-</div>
-
-<div id="topupModal" class="hidden modal"><div class="modal-content"><h3>ເຕີມເງິນ</h3><input type="number" id="topupAmount" placeholder="ຈຳນວນເງິນ (ກີບ)"><button id="confirmTopupBtn" style="margin-top:12px;">ຢືນຢັນ</button><button id="closeTopupBtn" style="background:#999;">ປິດ</button></div></div>
-
-<script type="importmap">
-    { "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js", "firebase/auth": "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js", "firebase/storage": "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js" } }
-</script>
-
-<script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, where, getDoc, setDoc } from "firebase/firestore";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
-    const firebaseConfig = { apiKey: "AIzaSyC8CF6_S0EsRFDt99Uhy7ycl35MBfgJfds", authDomain: "sabai-jai-app.firebaseapp.com", projectId: "sabai-jai-app", storageBucket: "sabai-jai-app.firebasestorage.app", messagingSenderId: "998120600338", appId: "1:998120600338:web:d809f6630335c09443f9cb" };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-    const provider = new GoogleAuthProvider();
-
-    let currentUser = null;
-
-    async function getUserWallet(uid) { const snap = await getDoc(doc(db, "wallets", uid)); return snap.exists() ? snap.data().balance : 0; }
-    async function updateWallet(uid, amount) { await setDoc(doc(db, "wallets", uid), { balance: amount }, { merge: true }); }
-
-    document.getElementById('topupBtn')?.addEventListener('click', () => document.getElementById('topupModal').classList.remove('hidden'));
-    document.getElementById('confirmTopupBtn')?.addEventListener('click', async () => { let amt = parseInt(document.getElementById('topupAmount').value); if(amt && currentUser) { let bal = await getUserWallet(currentUser.uid); await updateWallet(currentUser.uid, bal + amt); document.getElementById('walletAmount').innerText = bal + amt; alert('ເຕີມເງິນສຳເລັດ'); document.getElementById('topupModal').classList.add('hidden'); } });
-    document.getElementById('closeTopupBtn')?.addEventListener('click', () => document.getElementById('topupModal').classList.add('hidden'));
-
-    async function loadProducts() {
-        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-        const snapshot = await getDocs(q);
-        let products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        let search = document.getElementById('searchInput')?.value.toLowerCase() || '';
-        let filtered = products.filter(p => p.name?.toLowerCase().includes(search));
-        if(filtered.length === 0) { document.getElementById('productList').innerHTML = '<div class="empty-msg">ຍັງບໍ່ມີສິນຄ້າ</div>'; return; }
-        for(let p of filtered) {
-            let likeSnap = await getDocs(query(collection(db, "likes"), where("productId", "==", p.id)));
-            p.likeCount = likeSnap.size;
-            p.userLiked = currentUser ? likeSnap.docs.some(d => d.data().userId === currentUser.uid) : false;
-            let commentsSnap = await getDocs(query(collection(db, "comments"), where("productId", "==", p.id), orderBy("createdAt", "desc")));
-            p.comments = commentsSnap.docs.map(c => `<div class="comment"><strong>${c.data().userName}:</strong> ${c.data().text}</div>`).join('');
-        }
-        document.getElementById('productList').innerHTML = filtered.map(p => `<div class="product-card"><div class="product-title">${p.name}</div><div class="product-price">💰 ${p.price}</div><div class="product-contact">📞 ${p.phone}</div>${p.imageUrl ? `<img src="${p.imageUrl}" style="max-width:100%; border-radius:16px; margin:8px 0;">` : ''}<div class="action-buttons"><button class="like-btn ${p.userLiked ? 'liked' : ''}" data-id="${p.id}">${p.userLiked ? '❤️' : '🤍'} ${p.likeCount}</button><button class="share-btn" data-name="${p.name}" data-price="${p.price}">🔗 ແຊ່</button></div><div class="comments-section"><div class="comment-list">${p.comments}</div><div class="comment-input"><input type="text" placeholder="ຂຽນຄຳເຫັນ..." id="comment_${p.id}"><button onclick="window.addComment('${p.id}')">ສົ່ງ</button></div></div>${currentUser?.uid === p.userId ? `<button class="delete-btn" data-id="${p.id}">❌ ລຶບ</button>` : ''}</div>`).join('');
         
-        document.querySelectorAll('.like-btn').forEach(btn => btn.addEventListener('click', async (e) => { if(!currentUser) return alert('ກະລຸນາເຂົ້າສູ່ລະບົບ'); await addDoc(collection(db, "likes"), { productId: btn.dataset.id, userId: currentUser.uid }); loadProducts(); }));
-        document.querySelectorAll('.share-btn').forEach(btn => btn.addEventListener('click', () => { if(navigator.share) navigator.share({ title: btn.dataset.name, text: `ສິນຄ້າ: ${btn.dataset.name} ລາຄາ ${btn.dataset.price}` }); else alert('ລິ້ງ: '+window.location.href); }));
-        document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', async (e) => { await deleteDoc(doc(db, "products", btn.dataset.id)); loadProducts(); }));
+        let message = `🛒 *ຄຳສັ່ງຊື້ຫວຍ*%0A`;
+        message += `📅 ວັນທີ: ${date}%0A`;
+        message += `%0A📋 *ລາຍການທີ່ສັ່ງ:*%0A${itemsList}%0A`;
+        message += `%0A💰 *ລວມທັງໝົດ: ${total.toLocaleString()} ກີບ*%0A`;
+        message += `%0A--- ຂໍ້ມູນຜູ້ຂາຍ ---%0A${sellerInfo.replace(/\n/g, '%0A')}`;
+        message += `%0A%0Aຂອບໃຈທີ່ໃຊ້ບໍລິການ ສະບາຍໃຈ ຫວຍ 🎰`;
+        
+        return message;
     }
-    
-    window.addComment = async (productId) => { if(!currentUser) return alert('ກະລຸນາເຂົ້າສູ່ລະບົບ'); let text = document.getElementById(`comment_${productId}`).value; if(text) await addDoc(collection(db, "comments"), { productId, userId: currentUser.uid, userName: currentUser.displayName || currentUser.email, text, createdAt: Date.now() }); loadProducts(); };
-    
-    document.getElementById('searchBtn')?.addEventListener('click', loadProducts);
-    document.getElementById('publishBtn')?.addEventListener('click', async () => { if(!currentUser) return alert('ກະລຸນາເຂົ້າສູ່ລະບົບ'); let name=document.getElementById('productName').value, price=document.getElementById('price').value, desc=document.getElementById('description').value, phone=document.getElementById('phone').value, cat=document.getElementById('category').value; if(!name||!price||!phone) return alert('ປ້ອນຂໍ້ມູນໃຫ້ຄົບ'); let img=''; let file=document.getElementById('productImage').files[0]; if(file){ let fref=ref(storage, `products/${Date.now()}_${file.name}`); await uploadBytes(fref,file); img=await getDownloadURL(fref); } await addDoc(collection(db,"products"),{name,price,desc,phone,category:cat,imageUrl:img,userId:currentUser.uid,createdAt:Date.now()}); alert('ສຳເລັດ'); loadProducts(); });
-    document.getElementById('updateProfileBtn')?.addEventListener('click', async () => { if(!currentUser) return; let newName=document.getElementById('displayName').value; if(newName) await updateProfile(currentUser,{displayName:newName}); let file=document.getElementById('profileImage').files[0]; if(file){ let fref=ref(storage,`profiles/${currentUser.uid}`); await uploadBytes(fref,file); let url=await getDownloadURL(fref); await updateProfile(currentUser,{photoURL:url}); } alert('ອັບເດດສຳເລັດ'); renderUserInfo(); });
-    document.getElementById('logoutBtn')?.addEventListener('click', async () => { await signOut(auth); });
-    
-    function renderUserInfo() { if(!currentUser) return; document.getElementById('userInfo').innerHTML = `<img src="${currentUser.photoURL || 'https://via.placeholder.com/50'}" class="profile-pic"><span>${currentUser.displayName || currentUser.email}</span>`; }
-    
-    document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById('sellPanel').classList.add('hidden');
-        document.getElementById('buyPanel').classList.add('hidden');
-        document.getElementById('profilePanel').classList.add('hidden');
-        if(tab.dataset.tab === 'buy') document.getElementById('buyPanel').classList.remove('hidden');
-        if(tab.dataset.tab === 'sell') document.getElementById('sellPanel').classList.remove('hidden');
-        if(tab.dataset.tab === 'profile') document.getElementById('profilePanel').classList.remove('hidden');
-    }));
-    
-    onAuthStateChanged(auth, async (user) => {
-        currentUser = user;
-        if(user) { authSection.classList.add('hidden'); appContent.classList.remove('hidden'); renderUserInfo(); let bal=await getUserWallet(user.uid); document.getElementById('walletAmount').innerText=bal; loadProducts(); } 
-        else { authSection.classList.remove('hidden'); appContent.classList.add('hidden'); }
-    });
-    
-    window.login = () => { let email=document.getElementById('email').value, pwd=document.getElementById('password').value; signInWithEmailAndPassword(auth,email,pwd).catch(e=>alert(e.message)); };
-    window.register = () => { let email=document.getElementById('email').value, pwd=document.getElementById('password').value; createUserWithEmailAndPassword(auth,email,pwd).catch(e=>alert(e.message)); };
-    window.googleLogin = () => { signInWithPopup(auth,provider).catch(e=>alert(e.message)); };
-    document.getElementById('loginBtn').onclick = window.login;
-    document.getElementById('registerBtn').onclick = window.register;
-    document.getElementById('googleBtn').onclick = window.googleLogin;
-</script>
-</body>
-</html>
-    <div id="walletBar" class="wallet-bar">💰 ເງິນ: <span id="walletAmount">0</span> ກີບ <button id="topupBtn" style="background:#ff9800; border:none; padding:4px 12px; border-radius:20px;">➕ ເຕີມ</button></div>
-    <div class="search-box"><input type="text" id="searchInput" placeholder="ຄົ້ນຫາ..."><button id="searchBtn">🔍</button></div>
-    <div class="tabs"><div class="tab active" data-tab="buy">🛒 ຊື້</div><div class="tab" data-tab="sell">➕ ຂາຍ</div><div class="tab" data-tab="profile">👤 ໂປຣຟາຍ</div></div>
-    <div id="sellPanel" class="hidden"><div class="post-form"><h3>ລົງຂາຍສິນຄ້າ</h3><select id="category"><option value="ລົດ">ລົດ</option><option value="ເບີໂທ">ເບີໂທ</option><option value="ສິນຄ້າທົ່ວໄປ">ທົ່ວໄປ</option></select><input type="text" id="productName" placeholder="ຊື່ສິນຄ້າ"><input type="text" id="price" placeholder="ລາຄາ"><textarea id="description" rows="2" placeholder="ລາຍລະອຽດ"></textarea><input type="text" id="phone" placeholder="ເບີໂທຕິດຕໍ່"><input type="file" id="productImage" accept="image/*"><button id="publishBtn">ລົງຂາຍ</button></div></div>
-    <div id="buyPanel"><div id="productList" class="product-list"></div></div>
-    <div id="profilePanel" class="hidden"><div class="profile-form"><h3>ແກ້ໄຂໂປຣຟາຍ</h3><input type="text" id="displayName" placeholder="ຊື່ຜູ້ໃຊ້"><input type="file" id="profileImage" accept="image/*"><button id="updateProfileBtn">ອັບເດດ</button><button id="logoutBtn" class="logout-btn" style="background:#ddd; margin-top:8px;">ອອກຈາກລະບົບ</button></div></div>
-</div>
 
-<div id="topupModal" class="hidden" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:1000;"><div style="background:white; padding:20px; border-radius:28px; width:90%; max-width:350px;"><h3>ເຕີມເງິນ</h3><input type="number" id="topupAmount" placeholder="ຈຳນວນເງິນ (ກີບ)"><button id="confirmTopupBtn" style="margin-top:12px;">ຢືນຢັນ</button><button id="closeTopupBtn" style="background:#999; margin-top:8px;">ປິດ</button></div></div>
-
-<script type="importmap">
-    { "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js", "firebase/auth": "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js", "firebase/storage": "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js" } }
-</script>
-
-<script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, where, getDoc, setDoc } from "firebase/firestore";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
-    const firebaseConfig = { apiKey: "AIzaSyC8CF6_S0EsRFDt99Uhy7ycl35MBfgJfds", authDomain: "sabai-jai-app.firebaseapp.com", projectId: "sabai-jai-app", storageBucket: "sabai-jai-app.firebasestorage.app", messagingSenderId: "998120600338", appId: "1:998120600338:web:d809f6630335c09443f9cb" };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-    const provider = new GoogleAuthProvider();
-
-    let currentUser = null;
-
-    async function getUserWallet(uid) { const snap = await getDoc(doc(db, "wallets", uid)); return snap.exists() ? snap.data().balance : 0; }
-    async function updateWallet(uid, amount) { await setDoc(doc(db, "wallets", uid), { balance: amount }, { merge: true }); }
-
-    document.getElementById('topupBtn')?.addEventListener('click', () => { document.getElementById('topupModal').classList.remove('hidden'); });
-    document.getElementById('confirmTopupBtn')?.addEventListener('click', async () => { let amt = parseInt(document.getElementById('topupAmount').value); if(amt && currentUser) { let bal = await getUserWallet(currentUser.uid); await updateWallet(currentUser.uid, bal + amt); document.getElementById('walletAmount').innerText = bal + amt; alert('ເຕີມເງິນສຳເລັດ'); document.getElementById('topupModal').classList.add('hidden'); } });
-    document.getElementById('closeTopupBtn')?.addEventListener('click', () => { document.getElementById('topupModal').classList.add('hidden'); });
-
-    async function loadProducts() {
-        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-        const snapshot = await getDocs(q);
-        let products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
-        let filtered = products.filter(p => p.name?.toLowerCase().includes(search));
-        if(filtered.length === 0) { document.getElementById('productList').innerHTML = '<div class="empty-msg">ຍັງບໍ່ມີສິນຄ້າ</div>'; return; }
-        
-        for(let p of filtered) {
-            const likeSnap = await getDocs(query(collection(db, "likes"), where("productId", "==", p.id)));
-            p.likeCount = likeSnap.size;
-            p.userLiked = currentUser ? likeSnap.docs.some(d => d.data().userId === currentUser.uid) : false;
-            const commentsSnap = await getDocs(query(collection(db, "comments"), where("productId", "==", p.id), orderBy("createdAt", "desc")));
-            p.comments = commentsSnap.docs.map(c => `<div class="comment"><strong>${c.data().userName}:</strong> ${c.data().text}</div>`).join('');
+    function sendToFacebook() {
+        if(cart.length === 0) {
+            alert("ກະລຸນາເພີ່ມເລກຫວຍໃສ່ກະຕ່າກ່ອນ");
+            return;
         }
-        
-        document.getElementById('productList').innerHTML = filtered.map(p => `<div class="product-card"><div class="product-title">${p.name}</div><div class="product-price">💰 ${p.price}</div><div class="product-contact">📞 ${p.phone}</div>${p.imageUrl ? `<img src="${p.imageUrl}" style="max-width:100%; border-radius:16px; margin:8px 0;">` : ''}<div class="action-buttons"><button class="like-btn ${p.userLiked ? 'liked' : ''}" data-id="${p.id}">${p.userLiked ? '❤️' : '🤍'} ${p.likeCount}</button><button class="share-btn" data-name="${p.name}" data-price="${p.price}">🔗 ແຊ່</button></div><div class="comments-section"><div class="comment-list">${p.comments}</div><div class="comment-input"><input type="text" placeholder="ຂຽນຄຳເຫັນ..." id="comment_${p.id}"><button onclick="window.addComment('${p.id}')">ສົ່ງ</button></div></div>${currentUser?.uid === p.userId ? `<button class="delete-btn" data-id="${p.id}">❌ ລຶບ</button>` : ''}</div>`).join('');
-        
-        document.querySelectorAll('.like-btn').forEach(btn => btn.addEventListener('click', async (e) => { if(!currentUser) return alert('ກະລຸນາເຂົ້າສູ່ລະບົບ'); await addDoc(collection(db, "likes"), { productId: btn.dataset.id, userId: currentUser.uid }); loadProducts(); }));
-        document.querySelectorAll('.share-btn').forEach(btn => btn.addEventListener('click', () => { if(navigator.share) navigator.share({ title: btn.dataset.name, text: `ສິນຄ້າ: ${btn.dataset.name} ລາຄາ ${btn.dataset.price}` }); else alert('ລິ້ງ: '+window.location.href); }));
-        document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', async (e) => { await deleteDoc(doc(db, "products", btn.dataset.id)); loadProducts(); }));
+        const message = getOrderMessage();
+        // ເປີດ Messenger ກັບຜູ້ຂາຍ (ປ່ຽນເປັນ Facebook ID ຂອງທ່ານ)
+        const fbUrl = `https://m.me/100063618581398?text=${message}`;
+        window.open(fbUrl, '_blank');
     }
-    
-    window.addComment = async (productId) => { if(!currentUser) return alert('ກະລຸນາເຂົ້າສູ່ລະບົບ'); const text = document.getElementById(`comment_${productId}`).value; if(text) await addDoc(collection(db, "comments"), { productId, userId: currentUser.uid, userName: currentUser.displayName || currentUser.email, text, createdAt: Date.now() }); loadProducts(); };
-    
-    document.getElementById('searchBtn')?.addEventListener('click', loadProducts);
-    document.getElementById('publishBtn')?.addEventListener('click', async () => { if(!currentUser) return alert('ກະລຸນາເຂົ້າສູ່ລະບົບ'); let name=document.getElementById('productName').value, price=document.getElementById('price').value, desc=document.getElementById('description').value, phone=document.getElementById('phone').value, cat=document.getElementById('category').value; if(!name||!price||!phone) return alert('ປ້ອນຂໍ້ມູນໃຫ້ຄົບ'); let img=''; let file=document.getElementById('productImage').files[0]; if(file){ let ref=ref(storage, `products/${Date.now()}_${file.name}`); await uploadBytes(ref,file); img=await getDownloadURL(ref); } await addDoc(collection(db,"products"),{name,price,desc,phone,category:cat,imageUrl:img,userId:currentUser.uid,createdAt:Date.now()}); alert('ສຳເລັດ'); loadProducts(); });
-    document.getElementById('updateProfileBtn')?.addEventListener('click', async () => { if(!currentUser) return; let newName=document.getElementById('displayName').value; if(newName) await updateProfile(currentUser,{displayName:newName}); let file=document.getElementById('profileImage').files[0]; if(file){ let ref=ref(storage,`profiles/${currentUser.uid}`); await uploadBytes(ref,file); let url=await getDownloadURL(ref); await updateProfile(currentUser,{photoURL:url}); } alert('ອັບເດດສຳເລັດ'); renderUserInfo(); });
-    document.getElementById('logoutBtn')?.addEventListener('click', async () => { await signOut(auth); });
-    
-    function renderUserInfo() { if(!currentUser) return; document.getElementById('userInfo').innerHTML = `<img src="${currentUser.photoURL || 'https://via.placeholder.com/50'}" class="profile-pic"><span>${currentUser.displayName || currentUser.email}</span>`; }
-    
-    document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById('sellPanel').classList.add('hidden');
-        document.getElementById('buyPanel').classList.add('hidden');
-        document.getElementById('profilePanel').classList.add('hidden');
-        if(tab.dataset.tab === 'buy') document.getElementById('buyPanel').classList.remove('hidden');
-        if(tab.dataset.tab === 'sell') document.getElementById('sellPanel').classList.remove('hidden');
-        if(tab.dataset.tab === 'profile') document.getElementById('profilePanel').classList.remove('hidden');
-    }));
-    
-    onAuthStateChanged(auth, async (user) => {
-        currentUser = user;
-        if(user) { authSection.classList.add('hidden'); appContent.classList.remove('hidden'); renderUserInfo(); let bal=await getUserWallet(user.uid); document.getElementById('walletAmount').innerText=bal; loadProducts(); } 
-        else { authSection.classList.remove('hidden'); appContent.classList.add('hidden'); }
-    });
-    
-    window.login = () => { let email=document.getElementById('email').value, pwd=document.getElementById('password').value; signInWithEmailAndPassword(auth,email,pwd).catch(e=>alert(e.message)); };
-    window.register = () => { let email=document.getElementById('email').value, pwd=document.getElementById('password').value; createUserWithEmailAndPassword(auth,email,pwd).catch(e=>alert(e.message)); };
-    window.googleLogin = () => { signInWithPopup(auth,provider).catch(e=>alert(e.message)); };
-    document.getElementById('loginBtn').onclick = window.login;
-    document.getElementById('registerBtn').onclick = window.register;
-    document.getElementById('googleBtn').onclick = window.googleLogin;
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="lo">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ສະບາຍໃຈ - ຊຸມຊົນຂາຍສິນຄ້າ</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
-        body { background: #f5f7fb; padding-bottom: 80px; }
-        .header { background: linear-gradient(135deg, #2b7a4b, #1e5a3a); color: white; padding: 20px 16px; border-radius: 0 0 24px 24px; display: flex; align-items: center; gap: 12px; }
-        .logo { background: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; }
-        .header-text h1 { font-size: 24px; }
-        .wallet-bar { background: #ffe0b2; margin: 12px 16px; padding: 10px 16px; border-radius: 40px; display: flex; justify-content: space-between; align-items: center; }
-        .search-box { background: white; margin: -20px 16px 16px; padding: 8px 16px; border-radius: 48px; display: flex; gap: 10px; }
-        .search-box input { flex: 1; border: none; padding: 12px 0; font-size: 16px; outline: none; }
-        .search-box button { background: #2b7a4b; border: none; color: white; padding: 8px 18px; border-radius: 40px; cursor: pointer; }
-        .tabs { display: flex; gap: 8px; margin: 16px; flex-wrap: wrap; }
-        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 40px; font-weight: bold; cursor: pointer; background: #f0f2f5; color: #555; }
-        .tab.active { background: #2b7a4b; color: white; }
-        .post-form, .auth-form, .profile-form { background: white; margin: 16px; padding: 20px; border-radius: 28px; }
-        .post-form input, .post-form textarea, .post-form select, .auth-form input, .profile-form input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 20px; }
-        .post-form button, .auth-form button, .profile-form button { background: #2b7a4b; color: white; border: none; padding: 12px; width: 100%; border-radius: 32px; font-weight: bold; cursor: pointer; }
-        .product-list { margin: 16px; display: flex; flex-direction: column; gap: 16px; }
-        .product-card { background: white; border-radius: 24px; padding: 16px; }
-        .product-title { font-size: 18px; font-weight: bold; }
-        .product-price { font-size: 22px; font-weight: bold; color: #d9534f; margin: 8px 0; }
-        .product-contact { background: #f0f7f3; padding: 10px; border-radius: 20px; margin: 10px 0; }
-        .action-buttons { display: flex; gap: 12px; margin: 12px 0; }
-        .like-btn, .share-btn { background: #f0f2f5; border: none; padding: 8px 16px; border-radius: 40px; cursor: pointer; }
-        .like-btn.liked { background: #ffebee; color: #e91e63; }
-        .comments-section { border-top: 1px solid #eee; padding-top: 12px; margin-top: 8px; }
-        .comment { background: #f9f9f9; padding: 8px 12px; border-radius: 16px; margin-bottom: 8px; font-size: 13px; }
-        .comment-input { display: flex; gap: 8px; margin-top: 8px; }
-        .comment-input input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 24px; }
-        .comment-input button { background: #2b7a4b; color: white; border: none; padding: 8px 16px; border-radius: 24px; cursor: pointer; }
-        .delete-btn { background: #ffdddd; border: none; padding: 6px 12px; border-radius: 20px; color: #c0392b; margin-top: 10px; cursor: pointer; }
-        .user-info { display: flex; align-items: center; justify-content: space-between; background: white; margin: 16px; padding: 12px; border-radius: 28px; }
-        .profile-pic { width: 50px; height: 50px; border-radius: 50%; margin-right: 10px; }
-        .hidden { display: none; }
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 16px 20px; border-top: 1px solid #eee; }
-        .footer button { background: none; border: none; font-size: 14px; font-weight: bold; padding: 8px 12px; border-radius: 40px; cursor: pointer; }
-        .footer .active-footer { background: #2b7a4b; color: white; }
-    </style>
-</head>
-<body>
-<div class="header"><div class="logo">😊</div><div class="header-text"><h1>ສະບາຍໃຈ</h1><p>ຊຸມຊົນຂາຍສິນຄ້າ</p></div></div>
 
-<div id="authSection" class="auth-form">
-    <h3>ເຂົ້າສູ່ລະບົບ / ສະໝັກ</h3>
-    <input type="email" id="email" placeholder="ອີເມວ">
-    <input type="password" id="password" placeholder="ລະຫັດຜ່ານ">
-    <button id="loginBtn">ເຂົ້າສູ່ລະບົບ</button>
-    <button id="registerBtn" style="background:#555;">ສະໝັກ</button>
-    <button id="googleBtn" style="background:#4285F4;">Google</button>
-</div>
-
-<div id="appContent" class="hidden">
-    <div id="userInfo" class="user-info"></div>
-    <div id="walletBar" class="wallet-bar">💰 ເງິນ: <span id="walletAmount">0</span> ກີບ <button id="topupBtn" style="background:#ff9800; border:none; padding:4px 12px; border-radius:20px;">➕ ເຕີມ</button></div>
-    <div class="search-box"><input type="text" id="searchInput" placeholder="ຄົ້ນຫາ..."><button id="searchBtn">🔍</button></div>
-    <div class="tabs"><div class="tab active" data-tab="buy">🛒 ຊື້</div><div class="tab" data-tab="sell">➕ ຂາຍ</div><div class="tab" data-tab="profile">👤 ໂປຣຟາຍ</div></div>
-    <div id="sellPanel" class="hidden"><div class="post-form"><h3>ລົງຂາຍສິນຄ້າ</h3><select id="category"><option value="ລົດ">ລົດ</option><option value="ເບີໂທ">ເບີໂທ</option><option value="ສິນຄ້າທົ່ວໄປ">ທົ່ວໄປ</option></select><input type="text" id="productName" placeholder="ຊື່ສິນຄ້າ"><input type="text" id="price" placeholder="ລາຄາ"><textarea id="description" rows="2" placeholder="ລາຍລະອຽດ"></textarea><input type="text" id="phone" placeholder="ເບີໂທຕິດຕໍ່"><input type="file" id="productImage" accept="image/*"><button id="publishBtn">ລົງຂາຍ</button></div></div>
-    <div id="buyPanel"><div id="productList" class="product-list"></div></div>
-    <div id="profilePanel" class="hidden"><div class="profile-form"><h3>ແກ້ໄຂໂປຣຟາຍ</h3><input type="text" id="displayName" placeholder="ຊື່ຜູ້ໃຊ້"><input type="file" id="profileImage" accept="image/*"><button id="updateProfileBtn">ອັບເດດ</button><button id="logoutBtn" class="logout-btn" style="background:#ddd; margin-top:8px;">ອອກຈາກລະບົບ</button></div></div>
-</div>
-
-<div id="topupModal" class="hidden" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:1000;"><div style="background:white; padding:20px; border-radius:28px; width:90%; max-width:350px;"><h3>ເຕີມເງິນ</h3><input type="number" id="topupAmount" placeholder="ຈຳນວນເງິນ (ກີບ)"><button id="confirmTopupBtn" style="margin-top:12px;">ຢືນຢັນ</button><button id="closeTopupBtn" style="background:#999; margin-top:8px;">ປິດ</button></div></div>
-
-<script type="importmap">
-    { "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js", "firebase/auth": "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js", "firebase/storage": "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js" } }
-</script>
-
-<script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, where, getDoc, setDoc } from "firebase/firestore";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
-    const firebaseConfig = { apiKey: "AIzaSyC8CF6_S0EsRFDt99Uhy7ycl35MBfgJfds", authDomain: "sabai-jai-app.firebaseapp.com", projectId: "sabai-jai-app", storageBucket: "sabai-jai-app.firebasestorage.app", messagingSenderId: "998120600338", appId: "1:998120600338:web:d809f6630335c09443f9cb" };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-    const provider = new GoogleAuthProvider();
-
-    let currentUser = null;
-
-    async function getUserWallet(uid) { const snap = await getDoc(doc(db, "wallets", uid)); return snap.exists() ? snap.data().balance : 0; }
-    async function updateWallet(uid, amount) { await setDoc(doc(db, "wallets", uid), { balance: amount }, { merge: true }); }
-
-    document.getElementById('topupBtn')?.addEventListener('click', () => { document.getElementById('topupModal').classList.remove('hidden'); });
-    document.getElementById('confirmTopupBtn')?.addEventListener('click', async () => { let amt = parseInt(document.getElementById('topupAmount').value); if(amt && currentUser) { let bal = await getUserWallet(currentUser.uid); await updateWallet(currentUser.uid, bal + amt); document.getElementById('walletAmount').innerText = bal + amt; alert('ເຕີມເງິນສຳເລັດ'); document.getElementById('topupModal').classList.add('hidden'); } });
-    document.getElementById('closeTopupBtn')?.addEventListener('click', () => { document.getElementById('topupModal').classList.add('hidden'); });
-
-    async function loadProducts() {
-        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-        const snapshot = await getDocs(q);
-        let products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
-        let filtered = products.filter(p => p.name?.toLowerCase().includes(search));
-        if(filtered.length === 0) { document.getElementById('productList').innerHTML = '<div class="empty-msg">ຍັງບໍ່ມີສິນຄ້າ</div>'; return; }
-        
-        for(let p of filtered) {
-            const likeSnap = await getDocs(query(collection(db, "likes"), where("productId", "==", p.id)));
-            p.likeCount = likeSnap.size;
-            p.userLiked = currentUser ? likeSnap.docs.some(d => d.data().userId === currentUser.uid) : false;
-            const commentsSnap = await getDocs(query(collection(db, "comments"), where("productId", "==", p.id), orderBy("createdAt", "desc")));
-            p.comments = commentsSnap.docs.map(c => `<div class="comment"><strong>${c.data().userName}:</strong> ${c.data().text}</div>`).join('');
+    function sendToWhatsApp() {
+        if(cart.length === 0) {
+            alert("ກະລຸນາເພີ່ມເລກຫວຍໃສ່ກະຕ່າກ່ອນ");
+            return;
         }
-        
-        document.getElementById('productList').innerHTML = filtered.map(p => `<div class="product-card"><div class="product-title">${p.name}</div><div class="product-price">💰 ${p.price}</div><div class="product-contact">📞 ${p.phone}</div>${p.imageUrl ? `<img src="${p.imageUrl}" style="max-width:100%; border-radius:16px; margin:8px 0;">` : ''}<div class="action-buttons"><button class="like-btn ${p.userLiked ? 'liked' : ''}" data-id="${p.id}">${p.userLiked ? '❤️' : '🤍'} ${p.likeCount}</button><button class="share-btn" data-name="${p.name}" data-price="${p.price}">🔗 ແຊ່</button></div><div class="comments-section"><div class="comment-list">${p.comments}</div><div class="comment-input"><input type="text" placeholder="ຂຽນຄຳເຫັນ..." id="comment_${p.id}"><button onclick="window.addComment('${p.id}')">ສົ່ງ</button></div></div>${currentUser?.uid === p.userId ? `<button class="delete-btn" data-id="${p.id}">❌ ລຶບ</button>` : ''}</div>`).join('');
-        
-        document.querySelectorAll('.like-btn').forEach(btn => btn.addEventListener('click', async (e) => { if(!currentUser) return alert('ກະລຸນາເຂົ້າສູ່ລະບົບ'); await addDoc(collection(db, "likes"), { productId: btn.dataset.id, userId: currentUser.uid }); loadProducts(); }));
-        document.querySelectorAll('.share-btn').forEach(btn => btn.addEventListener('click', () => { if(navigator.share) navigator.share({ title: btn.dataset.name, text: `ສິນຄ້າ: ${btn.dataset.name} ລາຄາ ${btn.dataset.price}` }); else alert('ລິ້ງ: '+window.location.href); }));
-        document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', async (e) => { await deleteDoc(doc(db, "products", btn.dataset.id)); loadProducts(); }));
+        const message = getOrderMessage();
+        // ເປີດ WhatsApp ກັບເບີຜູ້ຂາຍ (ປ່ຽນເປັນເບີຂອງທ່ານ)
+        const phone = "8562055555555"; // ປ່ຽນເປັນເບີໂທຜູ້ຂາຍ
+        const waUrl = `https://wa.me/${phone}?text=${message}`;
+        window.open(waUrl, '_blank');
     }
-    
-    window.addComment = async (productId) => { if(!currentUser) return alert('ກະລຸນາເຂົ້າສູ່ລະບົບ'); const text = document.getElementById(`comment_${productId}`).value; if(text) await addDoc(collection(db, "comments"), { productId, userId: currentUser.uid, userName: currentUser.displayName || currentUser.email, text, createdAt: Date.now() }); loadProducts(); };
-    
-    document.getElementById('searchBtn')?.addEventListener('click', loadProducts);
-    document.getElementById('publishBtn')?.addEventListener('click', async () => { if(!currentUser) return alert('ກະລຸນາເຂົ້າສູ່ລະບົບ'); let name=document.getElementById('productName').value, price=document.getElementById('price').value, desc=document.getElementById('description').value, phone=document.getElementById('phone').value, cat=document.getElementById('category').value; if(!name||!price||!phone) return alert('ປ້ອນຂໍ້ມູນໃຫ້ຄົບ'); let img=''; let file=document.getElementById('productImage').files[0]; if(file){ let ref=ref(storage, `products/${Date.now()}_${file.name}`); await uploadBytes(ref,file); img=await getDownloadURL(ref); } await addDoc(collection(db,"products"),{name,price,desc,phone,category:cat,imageUrl:img,userId:currentUser.uid,createdAt:Date.now()}); alert('ສຳເລັດ'); loadProducts(); });
-    document.getElementById('updateProfileBtn')?.addEventListener('click', async () => { if(!currentUser) return; let newName=document.getElementById('displayName').value; if(newName) await updateProfile(currentUser,{displayName:newName}); let file=document.getElementById('profileImage').files[0]; if(file){ let ref=ref(storage,`profiles/${currentUser.uid}`); await uploadBytes(ref,file); let url=await getDownloadURL(ref); await updateProfile(currentUser,{photoURL:url}); } alert('ອັບເດດສຳເລັດ'); renderUserInfo(); });
-    document.getElementById('logoutBtn')?.addEventListener('click', async () => { await signOut(auth); });
-    
-    function renderUserInfo() { if(!currentUser) return; document.getElementById('userInfo').innerHTML = `<img src="${currentUser.photoURL || 'https://via.placeholder.com/50'}" class="profile-pic"><span>${currentUser.displayName || currentUser.email}</span>`; }
-    
-    document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById('sellPanel').classList.add('hidden');
-        document.getElementById('buyPanel').classList.add('hidden');
-        document.getElementById('profilePanel').classList.add('hidden');
-        if(tab.dataset.tab === 'buy') document.getElementById('buyPanel').classList.remove('hidden');
-        if(tab.dataset.tab === 'sell') document.getElementById('sellPanel').classList.remove('hidden');
-        if(tab.dataset.tab === 'profile') document.getElementById('profilePanel').classList.remove('hidden');
-    }));
-    
-    onAuthStateChanged(auth, async (user) => {
-        currentUser = user;
-        if(user) { authSection.classList.add('hidden'); appContent.classList.remove('hidden'); renderUserInfo(); let bal=await getUserWallet(user.uid); document.getElementById('walletAmount').innerText=bal; loadProducts(); } 
-        else { authSection.classList.remove('hidden'); appContent.classList.add('hidden'); }
-    });
-    
-    window.login = () => { let email=document.getElementById('email').value, pwd=document.getElementById('password').value; signInWithEmailAndPassword(auth,email,pwd).catch(e=>alert(e.message)); };
-    window.register = () => { let email=document.getElementById('email').value, pwd=document.getElementById('password').value; createUserWithEmailAndPassword(auth,email,pwd).catch(e=>alert(e.message)); };
-    window.googleLogin = () => { signInWithPopup(auth,provider).catch(e=>alert(e.message)); };
-    document.getElementById('loginBtn').onclick = window.login;
-    document.getElementById('registerBtn').onclick = window.register;
-    document.getElementById('googleBtn').onclick = window.googleLogin;
-</script>
-</body>
-</html>
 
-</div>
-
-<div id="topupModal" class="hidden modal"><div class="modal-content"><h3>ເຕີມເງິນ</h3><input type="number" id="topupAmount" placeholder="ຈຳນວນເງິນ (ກີບ)"><button id="confirmTopupBtn">ຢືນຢັນ</button><button id="closeTopupBtn" style="background:#999; margin-top:8px;">ປິດ</button></div></div>
-
-<script type="importmap">
-    { "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js", "firebase/auth": "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js", "firebase/storage": "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js" } }
-</script>
-
-<script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, where, getDoc, setDoc } from "firebase/firestore";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
-    const firebaseConfig = { apiKey: "AIzaSyC8CF6_S0EsRFDt99Uhy7ycl35MBfgJfds", authDomain: "sabai-jai-app.firebaseapp.com", projectId: "sabai-jai-app", storageBucket: "sabai-jai-app.firebasestorage.app", messagingSenderId: "998120600338", appId: "1:998120600338:web:d809f6630335c09443f9cb" };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-    const provider = new GoogleAuthProvider();
-
-    let currentUser = null;
-    let products = [];
-
-    async function getUserWallet(uid) { const ref = doc(db, "wallets", uid); const snap = await getDoc(ref); return snap.exists() ? snap.data().balance : 0; }
-    async function updateWallet(uid, amount) { await setDoc(doc(db, "wallets", uid), { balance: amount }, { merge: true }); }
-    async function loadLotteryHistory() { if(!currentUser) return; const q = query(collection(db, "lottery"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc")); const snap = await getDocs(q); document.getElementById('lotteryHistory').innerHTML = snap.docs.map(d => `<div class="comment">${d.data().country} | ເລກ ${d.data().number} | ${d.data().amount} ກີບ | ${new Date(d.data().createdAt).toLocaleString()}</div>`).join('') || '<div>ຍັງບໍ່ມີການຊື້</div>'; }
-    
-    document.getElementById('buyLotteryBtn')?.addEventListener('click', async () => {
-        if(!currentUser) return alert('ກະລຸນາເຂົ້າສູ່ລະບົບກ່ອນ');
-        const country = document.getElementById('lotteryCountry').value;
-        const number = document.getElementById('lotteryNumber').value;
-        const amount = parseInt(document.getElementById('lotteryAmount').value);
-        if(!number || !amount) return alert('ປ້ອນເລກ ແລະ ຈຳນວນເງິນ');
-        let balance = await getUserWallet(currentUser.uid);
-        if(balance < amount) return alert('ເງິນບໍ່ພຽງພໍ, ກະລຸນາເຕີມເງິນກ່ອນ');
-        await updateWallet(currentUser.uid, balance - amount);
-        await addDoc(collection(db, "lottery"), { userId: currentUser.uid, country, number, amount, createdAt: Date.now() });
-        alert('ຊື້ຫວຍສຳເລັດ');
-        document.getElementById('walletAmount').innerText = await getUserWallet(currentUser.uid);
-        loadLotteryHistory();
-    });
-    
-    document.getElementById('topupBtn')?.addEventListener('click', () => { document.getElementById('topupModal').classList.remove('hidden'); });
-    document.getElementById('confirmTopupBtn')?.addEventListener('click', async () => { let amt = parseInt(document.getElementById('topupAmount').value); if(amt && currentUser) { let bal = await getUserWallet(currentUser.uid); await updateWallet(currentUser.uid, bal + amt); document.getElementById('walletAmount').innerText = bal + amt; alert('ເຕີມເງິນສຳເລັດ'); document.getElementById('topupModal').classList.add('hidden'); } });
-    document.getElementById('closeTopupBtn')?.addEventListener('click', () => { document.getElementById('topupModal').classList.add('hidden'); });
-    
-    async function loadProducts() { const q = query(collection(db, "products"), orderBy("createdAt", "desc")); const snapshot = await getDocs(q); products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderProducts(); }
-    
-    async function renderProducts() {
-        const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
-        let filtered = products.filter(p => p.name?.toLowerCase().includes(search));
-        if(filtered.length === 0) { document.getElementById('productList').innerHTML = '<div class="empty-msg">ຍັງບໍ່ມີສິນຄ້າ</div>'; return; }
-        for(let p of filtered) {
-            const likeSnap = await getDocs(query(collection(db, "likes"), where("productId", "==", p.id)));
-            p.likeCount = likeSnap.size;
-            p.userLiked = currentUser ? likeSnap.docs.some(d => d.data().userId === currentUser.uid) : false;
-            const commentsSnap = await getDocs(query(collection(db, "comments"), where("productId", "==", p.id), orderBy("createdAt", "desc")));
-            p.commentsList = commentsSnap.docs.map(c => `<div class="comment"><strong>${c.data().userName}:</strong> ${c.data().text}<br><small>${new Date(c.data().createdAt).toLocaleString()}</small></div>`).join('');
+    document.getElementById("addToCartBtn")?.addEventListener("click", addToCart);
+    document.getElementById("sendFBBtn")?.addEventListener("click", sendToFacebook);
+    document.getElementById("sendWABtn")?.addEventListener("click", sendToWhatsApp);
+    document.getElementById("checkoutBtn")?.addEventListener("click", () => {
+        if(cart.length === 0) {
+            alert("ກະລຸນາເພີ່ມເລກຫວຍກ່ອນ");
+        } else {
+            // ໃຫ້ຜູ້ໃຊ້ເລືອກຊ່ອງທາງ
+            if(confirm("ຢາກສົ່ງຄຳສັ່ງຜ່ານ Facebook Messenger ຫຼື WhatsApp?\nກົດ OK = Facebook, Cancel = WhatsApp")) {
+                sendToFacebook();
+            } else {
+                sendToWhatsApp();
+            }
         }
-        document.getElementById('productList').innerHTML = filtered.map(p => `<div class="product-card"><div class="product-title">${p.name}</div><div class="product-category">${p.category}</div><div class="product-price">💰 ${p.price}</div><div class="product-desc">${p.desc}</div><div class="product-contact">📞 ${p.phone}</div>${p.imageUrl ? `<img src="${p.imageUrl}" style="max-width:100%; border-radius:16px; margin-top:8px;">` : ''}<div class="action-buttons"><button class="like-btn ${p.userLiked ? 'liked' : ''}" data-id="${p.id}">${p.userLiked ? '❤️' : '🤍'} ${p.likeCount}</button><button class="share-btn" data-name="${p.name}" data-price="${p.price}">🔗 ແຊ່</button></div><div class="comments-section"><div class="comment-list">${p.commentsList}</div><div class="comment-input"><input type="text" placeholder="ຂຽນຄຳເຫັນ..." id="commentInput_${p.id}"><button onclick="window.addComment('${p.id}')">ສົ່ງ</button></div></div>${currentUser?.uid === p.userId ? `<button class="delete-btn" data-id="${p.id}">❌ ລຶບ</button>` : ''}</div>`).join('');
-        
-        document.querySelectorAll('.like-btn').forEach(btn => btn.addEventListener('click', async (e) => { if(!currentUser) return alert('ກະລຸນາເຂົ້າສູ່ລະບົບກ່ອນ'); const pid = btn.dataset.id; await addDoc(collection(db, "likes"), { productId: pid, userId: currentUser.uid }); renderProducts(); }));
-        document.querySelectorAll('.share-btn').forEach(btn => btn.addEventListener('click', () => { const name = btn.dataset.name, price = btn.dataset.price; if(navigator.share) navigator.share({ title: name, text: `ສິນຄ້າ: ${name} ລາຄາ ${price}`, url: window.location.href }); else alert('ກົດຄັດລອກລິ້ງ: '+window.location.href); }));
-        document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', async (e) => { await deleteDoc(doc(db, "products", btn.dataset.id)); loadProducts(); }));
-    }
-    
-    window.addComment = async (productId) => { if(!currentUser) return alert('ກະລຸນາເຂົ້າສູ່ລະບົບກ່ອນ'); const text = document.getElementById(`commentInput_${productId}`).value; if(text) await addDoc(collection(db, "comments"), { productId, userId: currentUser.uid, userName: currentUser.displayName || currentUser.email, text, createdAt: Date.now() }); renderProducts(); };
-    
-    document.getElementById('searchBtn')?.addEventListener('click', renderProducts);
-    document.getElementById('publishBtn')?.addEventListener('click', async () => {
-        if(!currentUser) return alert('ກະລຸນາເຂົ້າສູ່ລະບົບກ່ອນ');
-        const name = document.getElementById('productName').value, price = document.getElementById('price').value, desc = document.getElementById('description').value, phone = document.getElementById('phone').value, category = document.getElementById('category').value;
-        if(!name || !price || !phone) return alert('ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບ');
-        let imageUrl = '';
-        const file = document.getElementById('productImage').files[0];
-        if(file) { const storageRef = ref(storage, `products/${Date.now()}_${file.name}`); await uploadBytes(storageRef, file); imageUrl = await getDownloadURL(storageRef); }
-        await addDoc(collection(db, "products"), { name, price, desc, phone, category, imageUrl, userId: currentUser.uid, userEmail: currentUser.email, createdAt: Date.now() });
-        alert('ໂພສສຳເລັດ');
-        loadProducts();
     });
-    
-    document.getElementById('updateProfileBtn')?.addEventListener('click', async () => { if(!currentUser) return; const newName = document.getElementById('displayName').value; if(newName) await updateProfile(currentUser, { displayName: newName }); const file = document.getElementById('profileImage').files[0]; if(file) { const storageRef = ref(storage, `profiles/${currentUser.uid}`); await uploadBytes(storageRef, file); const url = await getDownloadURL(storageRef); await updateProfile(currentUser, { photoURL: url }); } alert('ອັບເດດສຳເລັດ'); renderUserInfo(); });
-    document.getElementById('logoutBtn')?.addEventListener('click', async () => { await signOut(auth); });
-    
-    function renderUserInfo() { if(!currentUser) return; document.getElementById('userInfo').innerHTML = `<img src="${currentUser.photoURL || 'https://via.placeholder.com/50'}" class="profile-pic"><span class="user-name">${currentUser.displayName || currentUser.email}</span>`; }
-    
-    document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById('sellPanel').classList.add('hidden');
-        document.getElementById('buyPanel').classList.add('hidden');
-        document.getElementById('lotteryPanel').classList.add('hidden');
-        document.getElementById('profilePanel').classList.add('hidden');
-        if(tab.dataset.tab === 'buy') document.getElementById('buyPanel').classList.remove('hidden');
-        if(tab.dataset.tab === 'sell') document.getElementById('sellPanel').classList.remove('hidden');
-        if(tab.dataset.tab === 'lottery') { document.getElementById('lotteryPanel').classList.remove('hidden'); loadLotteryHistory(); }
-        if(tab.dataset.tab === 'profile') document.getElementById('profilePanel').classList.remove('hidden');
-    }));
-    
-    onAuthStateChanged(auth, async (user) => {
-        currentUser = user;
-        if(user) { 
-            authSection.classList.add('hidden'); 
-            appContent.classList.remove('hidden'); 
-            renderUserInfo(); 
-            const bal = await getUserWallet(user.uid);
-            document.getElementById('walletAmount').innerText = bal;
-            loadProducts(); 
-        } else { authSection.classList.remove('hidden'); appContent.classList.add('hidden'); }
-    });
-    
-    window.login = () => { const email = document.getElementById('email').value, password = document.getElementById('password').value; signInWithEmailAndPassword(auth, email, password).catch(e => alert(e.message)); };
-    window.register = () => { const email = document.getElementById('email').value, password = document.getElementById('password').value; createUserWithEmailAndPassword(auth, email, password).catch(e => alert(e.message)); };
-    window.googleLogin = () => { signInWithPopup(auth, provider).catch(e => alert(e.message)); };
-    document.getElementById('loginBtn').onclick = window.login;
-    document.getElementById('registerBtn').onclick = window.register;
-    document.getElementById('googleBtn').onclick = window.googleLogin;
-</script>
-</body>
-</html>
-        currentUser = user;
-        if(user) { 
-            authSection.classList.add('hidden'); 
-            appContent.classList.remove('hidden'); 
-            renderUserInfo(); 
-            const bal = await getUserWallet(user.uid);
-            document.getElementById('walletAmount').innerText = bal;
-            loadProducts(); 
-        } else { authSection.classList.remove('hidden'); appContent.classList.add('hidden'); }
-    });
-    
-    window.login = () => { const email = document.getElementById('email').value, password = document.getElementById('password').value; signInWithEmailAndPassword(auth, email, password).catch(e => alert(e.message)); };
-    window.register = () => { const email = document.getElementById('email').value, password = document.getElementById('password').value; createUserWithEmailAndPassword(auth, email, password).catch(e => alert(e.message)); };
-    window.googleLogin = () => { signInWithPopup(auth, provider).catch(e => alert(e.message)); };
-    document.getElementById('loginBtn').onclick = window.login;
-    document.getElementById('registerBtn').onclick = window.register;
-    document.getElementById('googleBtn').onclick = window.googleLogin;
+
+    loadCart();
 </script>
 </body>
 </html>
