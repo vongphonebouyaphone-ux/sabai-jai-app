@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ສະບາຍໃຈ - ສັ່ງຊື້ຫວຍລາວ/ไทย</title>
+    <title>ສະບາຍໃຈ - ສັ່ງຊື້ຫວຍລາວ/ໄທ</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
         body { background: #f5f7fb; padding-bottom: 100px; }
@@ -38,7 +38,7 @@
 
 <div class="header">
     <h1><span>🎰</span> ສະບາຍໃຈ ສັ່ງຊື້ຫວຍ</h1>
-    <p>ຊື້ຫວຍລາວ/ไทย ຫຼາຍເລກໃນຄັ້ງດຽວ — ຄຳນວນລວມອັດຕະໂນມັດ</p>
+    <p>ຊື້ຫວຍລາວ/ໄທ ຫຼາຍເລກໃນຄັ້ງດຽວ — ຄຳນວນລວມອັດຕະໂນມັດ</p>
 </div>
 
 <div class="container">
@@ -54,16 +54,14 @@
                     <th>ປະເທດ</th>
                     <th>ເລກຫວຍ</th>
                     <th>ຈຳນວນເງິນ (ກີບ)</th>
-                    <th>จำนวนเงิน (บาท)</th>
                     <th style="width: 50px"></th>
                 </tr>
             </thead>
             <tbody id="tableBody">
                 <tr>
-                    <td><select class="lottery-type"><option value="ຫວຍລາວ">🇱🇦 ຫວຍລາວ</option><option value="ຫວຍໄທ">🇹🇭ຫວຍໄທຍ</option></select></td>
-                    <td><input type="text" class="lottery-number" placeholder="ເຊັ່ນ: 0000"></td>
+                    <td><select class="lottery-type"><option value="ຫວຍລາວ">🇱🇦 ຫວຍລາວ</option><option value="ຫວຍໄທ">🇹🇭 ຫວຍໄທ</option></select></td>
+                    <td><input type="text" class="lottery-number" placeholder="ເຊັ່ນ: 1234"></td>
                     <td><input type="number" class="lottery-amount" placeholder="ຈຳນວນເງິນ" value="1000"></td>
-                    <td><input type="number" class="lottery-amount" placeholder="บาท" value="1"></td>
                     <td><button class="remove-row" style="display:none;">❌</button></td>
                 </tr>
             </tbody>
@@ -77,7 +75,7 @@
 
     <div class="seller-box">
         <div>📢 ຂໍ້ມູນຜູ້ຂາຍ (ລູກຄ້າຈະເຫັນເມື່ອສົ່ງຂໍ້ຄວາມ):</div>
-        <textarea id="sellerInfo" rows="3">ຮ້ານຫວຍສະບາຍໃຈ
+        <textarea id="sellerInfo" rows="3">ຫວຍສະບາຍໃຈ-หวยสบายใจ
 ເບີໂທ: 020 98297792
 ບໍລິການສັ່ງຊື້ຫວຍອອນລາຍ</textarea>
     </div>
@@ -95,8 +93,8 @@
 <script>
     // ຕັ້ງຄ່າເບີໂທ ແລະ ລິ້ງ Messenger ຂອງທ່ານ
     // ປ່ຽນຕາມນີ້ໃຫ້ເປັນຂອງທ່ານ
-    const YOUR_PHONE = "8562091155102";     // ເບີໂທລະສັບ (ຕົວຢ່າງ: 85620 98297792) ບໍ່ຕ້ອງມີ +
-    const YOUR_MESSENGER_ID = "https://www.facebook.com/share/1C2oSF47DU/?mibextid=wwXIfr";  // ເອົາລິ້ງ Messenger ຂອງທ່ານ (ເບິ່ງວິທີຂ້າງລຸ່ມ)
+    const YOUR_PHONE = "85620xxxxxxxx";     // ເບີໂທລະສັບ (ຕົວຢ່າງ: 85620 12345678) ບໍ່ຕ້ອງມີ +
+    const YOUR_MESSENGER_ID = "100063618581398";  // ເອົາລິ້ງ Messenger ຂອງທ່ານ (ເບິ່ງວິທີຂ້າງລຸ່ມ)
 
     function updateTotal() {
         let total = 0;
@@ -151,8 +149,6 @@
         orders.forEach((item, idx) => {
             total += item.amount;
             itemsList += `%0A🔹 ${idx+1}. ${item.type} | ເລກ: ${item.number} | ${item.amount.toLocaleString()} ກີບ`;
-             total += item.amount;
-        
         });
         
         let message = `🛒 *ຄຳສັ່ງຊື້ຫວຍ*%0A`;
