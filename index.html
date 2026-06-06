@@ -3850,4 +3850,346 @@ html
     showBuyPanel();
 </script>
 </body>
+</html><!DOCTYPE html>
+<html lang="lo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ສະບາຍໃຈ - ຊຸມຊົນຂາຍສິນຄ້າ</title>
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, where, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC8CF6_S0EsRFDt99Uhy7ycl35MBfgJfds",
+            authDomain: "sabai-jai-app.firebaseapp.com",
+            projectId: "sabai-jai-app",
+            storageBucket: "sabai-jai-app.firebasestorage.app",
+            messagingSenderId: "998120600338",
+            appId: "1:998120600338:web:d809f6630335c09443f9cb",
+            measurementId: "G-XY8X97HJ5L"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+        const provider = new GoogleAuthProvider();
+
+        window.appState = { auth, db, storage, provider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, signInWithPopup, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, where, getDoc, updateDoc, ref, uploadBytes, getDownloadURL, deleteObject };
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+        body { background: #f5f7fb; padding-bottom: 80px; }
+        .header { background: linear-gradient(135deg, #2b7a4b, #1e5a3a); color: white; padding: 20px 16px; border-radius: 0 0 24px 24px; }
+        .header h1 { font-size: 28px; display: flex; align-items: center; gap: 8px; }
+        .header p { font-size: 14px; opacity: 0.9; margin-top: 6px; }
+        .search-box { background: white; margin: -20px 16px 16px; padding: 8px 16px; border-radius: 48px; display: flex; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .search-box input { flex: 1; border: none; padding: 12px 0; font-size: 16px; outline: none; }
+        .search-box button { background: #2b7a4b; border: none; color: white; padding: 8px 18px; border-radius: 40px; cursor: pointer; }
+        .tabs { display: flex; gap: 12px; margin: 16px; background: white; padding: 6px; border-radius: 48px; }
+        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 40px; font-weight: bold; cursor: pointer; background: #f0f2f5; color: #555; }
+        .tab.active { background: #2b7a4b; color: white; }
+        .post-form, .auth-form, .profile-form { background: white; margin: 16px; padding: 20px; border-radius: 28px; }
+        .post-form input, .post-form textarea, .post-form select, .auth-form input, .profile-form input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 15px; }
+        .post-form button, .auth-form button, .profile-form button { background: #2b7a4b; color: white; border: none; padding: 12px; width: 100%; border-radius: 32px; font-weight: bold; cursor: pointer; }
+        .product-list { margin: 16px; display: flex; flex-direction: column; gap: 16px; }
+        .product-card { background: white; border-radius: 24px; padding: 16px; }
+        .product-title { font-size: 18px; font-weight: bold; color: #1e2f2a; }
+        .product-category { display: inline-block; background: #e9f5ef; color: #2b7a4b; padding: 4px 12px; border-radius: 20px; font-size: 12px; margin: 8px 0; }
+        .product-price { font-size: 22px; font-weight: bold; color: #d9534f; margin: 6px 0; }
+        .product-desc { color: #666; margin: 8px 0; font-size: 14px; }
+        .product-contact { background: #f0f7f3; padding: 10px; border-radius: 20px; margin-top: 10px; font-size: 14px; color: #1e5a3a; }
+        .delete-btn, .logout-btn { background: #ffdddd; border: none; padding: 6px 12px; border-radius: 20px; color: #c0392b; margin-top: 10px; cursor: pointer; }
+        .logout-btn { background: #ddd; color: #333; margin-left: 10px; }
+        .empty-msg { text-align: center; padding: 40px; color: #aaa; }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 16px 20px; border-top: 1px solid #eee; }
+        .footer button { background: none; border: none; font-size: 18px; font-weight: bold; padding: 10px 20px; border-radius: 40px; cursor: pointer; color: #555; }
+        .footer .active-footer { background: #2b7a4b; color: white; }
+        .hidden { display: none; }
+        .profile-pic { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 10px; }
+        .user-info { display: flex; align-items: center; justify-content: space-between; background: white; margin: 16px; padding: 12px; border-radius: 28px; }
+        .user-name { font-weight: bold; }
+        .btn-small { background: #2b7a4b; color: white; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+<div class="header"><h1><span>😊</span> ສະບາຍໃຈ</h1><p>ຊຸມຊົນຂາຍສິນຄ້າ — ລົງທະບຽນຟຣີ</p></div>
+
+<div id="authSection" class="auth-form">
+    <h3>ເຂົ້າສູ່ລະບົບ / ສະໝັກສະມາຊິກ</h3>
+    <input type="email" id="email" placeholder="ອີເມວ">
+    <input type="password" id="password" placeholder="ລະຫັດຜ່ານ">
+    <button id="loginBtn">ເຂົ້າສູ່ລະບົບ</button>
+    <button id="registerBtn" style="background:#555; margin-top:8px;">ສະໝັກສະມາຊິກ</button>
+    <button id="googleBtn" style="background:#4285F4; margin-top:8px;">ເຂົ້າສູ່ລະບົບດ້ວຍ Google</button>
+</div>
+
+<div id="appContent" class="hidden">
+    <div id="userInfo" class="user-info"></div>
+    <div class="search-box"><input type="text" id="searchInput" placeholder="ຄົ້ນຫາສິນຄ້າ..."><button id="searchBtn">🔍</button></div>
+    <div class="tabs"><div class="tab active" data-tab="buy">🛒 ຊື້ສິນຄ້າ</div><div class="tab" data-tab="sell">➕ ຂາຍສິນຄ້າ</div><div class="tab" data-tab="profile">👤 ໂປຣຟາຍ</div></div>
+    
+    <div id="sellPanel" class="hidden"><div class="post-form"><h3>ລົງຂາຍສິນຄ້າ</h3><select id="category"><option value="ລົດ">ລົດ</option><option value="ເບີໂທ">ເບີໂທລະສັບ</option><option value="ສິນຄ້າທົ່ວໄປ">ສິນຄ້າທົ່ວໄປ</option></select><input type="text" id="productName" placeholder="ຊື່ສິນຄ້າ"><input type="text" id="price" placeholder="ລາຄາ"><textarea id="description" rows="2" placeholder="ລາຍລະອຽດ"></textarea><input type="text" id="phone" placeholder="ເບີໂທຕິດຕໍ່"><input type="file" id="productImage" accept="image/*"><button id="publishBtn">ລົງຂາຍ</button></div></div>
+    
+    <div id="buyPanel"><div id="productList" class="product-list"></div></div>
+    
+    <div id="profilePanel" class="hidden"><div class="profile-form"><h3>ແກ້ໄຂໂປຣຟາຍ</h3><input type="text" id="displayName" placeholder="ຊື່ຜູ້ໃຊ້"><input type="file" id="profileImage" accept="image/*"><button id="updateProfileBtn">ອັບເດດໂປຣຟາຍ</button><button id="logoutBtn" class="logout-btn">ອອກຈາກລະບົບ</button></div></div>
+</div>
+
+<script type="module">
+    import { auth, db, storage, provider, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile, signInWithPopup, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, where, getDoc, updateDoc, ref, uploadBytes, getDownloadURL, deleteObject } from "./firebase-imports.js";
+    
+    let currentUser = null;
+    let products = [];
+
+    const authSection = document.getElementById('authSection');
+    const appContent = document.getElementById('appContent');
+    const userInfoDiv = document.getElementById('userInfo');
+    const productListDiv = document.getElementById('productList');
+    
+    function renderUserInfo() {
+        if(!currentUser) return;
+        userInfoDiv.innerHTML = `<img src="${currentUser.photoURL || 'https://via.placeholder.com/50'}" class="profile-pic"><span class="user-name">${currentUser.displayName || currentUser.email}</span>`;
+    }
+    
+    async function loadProducts() {
+        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+        products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderProducts();
+    }
+    
+    function renderProducts() {
+        const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
+        let filtered = products.filter(p => p.name.toLowerCase().includes(search) || p.category.toLowerCase().includes(search));
+        if(filtered.length === 0) { productListDiv.innerHTML = '<div class="empty-msg">ຍັງບໍ່ມີສິນຄ້າ</div>'; return; }
+        productListDiv.innerHTML = filtered.map(p => `<div class="product-card"><div class="product-title">${p.name}</div><div class="product-category">${p.category}</div><div class="product-price">💰 ${p.price}</div><div class="product-desc">${p.desc}</div><div class="product-contact">📞 ຕິດຕໍ່: ${p.phone}</div>${p.imageUrl ? `<img src="${p.imageUrl}" style="max-width:100%; border-radius:12px; margin-top:8px;">` : ''}${currentUser?.uid === p.userId ? `<button class="delete-btn" data-id="${p.id}">❌ ລຶບ</button>` : ''}</div>`).join('');
+        document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', async (e) => { await deleteDoc(doc(db, "products", btn.dataset.id)); loadProducts(); }));
+    }
+    
+    document.getElementById('searchBtn').addEventListener('click', renderProducts);
+    document.getElementById('publishBtn')?.addEventListener('click', async () => {
+        const name = document.getElementById('productName').value, price = document.getElementById('price').value, desc = document.getElementById('description').value, phone = document.getElementById('phone').value, category = document.getElementById('category').value;
+        if(!name || !price || !phone) return alert('ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບ');
+        let imageUrl = '';
+        const file = document.getElementById('productImage').files[0];
+        if(file) { const storageRef = ref(storage, `products/${Date.now()}_${file.name}`); await uploadBytes(storageRef, file); imageUrl = await getDownloadURL(storageRef); }
+        await addDoc(collection(db, "products"), { name, price, desc, phone, category, imageUrl, userId: currentUser.uid, userEmail: currentUser.email, createdAt: Date.now() });
+        alert('ໂພສສຳເລັດ'); loadProducts();
+    });
+    
+    document.getElementById('updateProfileBtn')?.addEventListener('click', async () => {
+        const newName = document.getElementById('displayName').value;
+        if(newName) await updateProfile(currentUser, { displayName: newName });
+        const file = document.getElementById('profileImage').files[0];
+        if(file) { const storageRef = ref(storage, `profiles/${currentUser.uid}`); await uploadBytes(storageRef, file); const url = await getDownloadURL(storageRef); await updateProfile(currentUser, { photoURL: url }); }
+        alert('ອັບເດດສຳເລັດ');
+        renderUserInfo();
+    });
+    
+    document.getElementById('logoutBtn')?.addEventListener('click', async () => { await signOut(auth); });
+    
+    document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('sellPanel').classList.add('hidden');
+        document.getElementById('buyPanel').classList.add('hidden');
+        document.getElementById('profilePanel').classList.add('hidden');
+        if(tab.dataset.tab === 'buy') document.getElementById('buyPanel').classList.remove('hidden');
+        if(tab.dataset.tab === 'sell') document.getElementById('sellPanel').classList.remove('hidden');
+        if(tab.dataset.tab === 'profile') document.getElementById('profilePanel').classList.remove('hidden');
+    }));
+    
+    onAuthStateChanged(auth, (user) => {
+        currentUser = user;
+        if(user) { authSection.classList.add('hidden'); appContent.classList.remove('hidden'); renderUserInfo(); loadProducts(); }
+        else { authSection.classList.remove('hidden'); appContent.classList.add('hidden'); }
+    });
+    
+    window.login = () => { const email = document.getElementById('email').value, password = document.getElementById('password').value; signInWithEmailAndPassword(auth, email, password).catch(e => alert(e.message)); };
+    window.register = () => { const email = document.getElementById('email').value, password = document.getElementById('password').value; createUserWithEmailAndPassword(auth, email, password).catch(e => alert(e.message)); };
+    window.googleLogin = () => { signInWithPopup(auth, provider).catch(e => alert(e.message)); };
+    document.getElementById('loginBtn').onclick = window.login;
+    document.getElementById('registerBtn').onclick = window.register;
+    document.getElementById('googleBtn').onclick = window.googleLogin;
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="lo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ສະບາຍໃຈ - ຊຸມຊົນຂາຍສິນຄ້າ</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+        body { background: #f5f7fb; padding-bottom: 80px; }
+        .header { background: linear-gradient(135deg, #2b7a4b, #1e5a3a); color: white; padding: 20px 16px; border-radius: 0 0 24px 24px; }
+        .header h1 { font-size: 28px; display: flex; align-items: center; gap: 8px; }
+        .header p { font-size: 14px; opacity: 0.9; margin-top: 6px; }
+        .search-box { background: white; margin: -20px 16px 16px; padding: 8px 16px; border-radius: 48px; display: flex; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .search-box input { flex: 1; border: none; padding: 12px 0; font-size: 16px; outline: none; }
+        .search-box button { background: #2b7a4b; border: none; color: white; padding: 8px 18px; border-radius: 40px; cursor: pointer; }
+        .tabs { display: flex; gap: 12px; margin: 16px; background: white; padding: 6px; border-radius: 48px; }
+        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 40px; font-weight: bold; cursor: pointer; background: #f0f2f5; color: #555; }
+        .tab.active { background: #2b7a4b; color: white; }
+        .post-form, .auth-form, .profile-form { background: white; margin: 16px; padding: 20px; border-radius: 28px; }
+        .post-form input, .post-form textarea, .post-form select, .auth-form input, .profile-form input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 15px; }
+        .post-form button, .auth-form button, .profile-form button { background: #2b7a4b; color: white; border: none; padding: 12px; width: 100%; border-radius: 32px; font-weight: bold; cursor: pointer; }
+        .product-list { margin: 16px; display: flex; flex-direction: column; gap: 16px; }
+        .product-card { background: white; border-radius: 24px; padding: 16px; }
+        .product-title { font-size: 18px; font-weight: bold; color: #1e2f2a; }
+        .product-category { display: inline-block; background: #e9f5ef; color: #2b7a4b; padding: 4px 12px; border-radius: 20px; font-size: 12px; margin: 8px 0; }
+        .product-price { font-size: 22px; font-weight: bold; color: #d9534f; margin: 6px 0; }
+        .product-desc { color: #666; margin: 8px 0; font-size: 14px; }
+        .product-contact { background: #f0f7f3; padding: 10px; border-radius: 20px; margin-top: 10px; font-size: 14px; color: #1e5a3a; }
+        .delete-btn, .logout-btn { background: #ffdddd; border: none; padding: 6px 12px; border-radius: 20px; color: #c0392b; margin-top: 10px; cursor: pointer; }
+        .logout-btn { background: #ddd; color: #333; margin-left: 10px; }
+        .empty-msg { text-align: center; padding: 40px; color: #aaa; }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 16px 20px; border-top: 1px solid #eee; }
+        .footer button { background: none; border: none; font-size: 18px; font-weight: bold; padding: 10px 20px; border-radius: 40px; cursor: pointer; color: #555; }
+        .footer .active-footer { background: #2b7a4b; color: white; }
+        .hidden { display: none; }
+        .profile-pic { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 10px; }
+        .user-info { display: flex; align-items: center; justify-content: space-between; background: white; margin: 16px; padding: 12px; border-radius: 28px; }
+        .user-name { font-weight: bold; }
+        .btn-small { background: #2b7a4b; color: white; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+<div class="header"><h1><span>😊</span> ສະບາຍໃຈ</h1><p>ຊຸມຊົນຂາຍສິນຄ້າ — ລົງທະບຽນຟຣີ</p></div>
+
+<div id="authSection" class="auth-form">
+    <h3>ເຂົ້າສູ່ລະບົບ / ສະໝັກສະມາຊິກ</h3>
+    <input type="email" id="email" placeholder="ອີເມວ">
+    <input type="password" id="password" placeholder="ລະຫັດຜ່ານ">
+    <button id="loginBtn">ເຂົ້າສູ່ລະບົບ</button>
+    <button id="registerBtn" style="background:#555; margin-top:8px;">ສະໝັກສະມາຊິກ</button>
+    <button id="googleBtn" style="background:#4285F4; margin-top:8px;">ເຂົ້າສູ່ລະບົບດ້ວຍ Google</button>
+</div>
+
+<div id="appContent" class="hidden">
+    <div id="userInfo" class="user-info"></div>
+    <div class="search-box"><input type="text" id="searchInput" placeholder="ຄົ້ນຫາສິນຄ້າ..."><button id="searchBtn">🔍</button></div>
+    <div class="tabs"><div class="tab active" data-tab="buy">🛒 ຊື້ສິນຄ້າ</div><div class="tab" data-tab="sell">➕ ຂາຍສິນຄ້າ</div><div class="tab" data-tab="profile">👤 ໂປຣຟາຍ</div></div>
+    
+    <div id="sellPanel" class="hidden"><div class="post-form"><h3>ລົງຂາຍສິນຄ້າ</h3><select id="category"><option value="ລົດ">ລົດ</option><option value="ເບີໂທ">ເບີໂທລະສັບ</option><option value="ສິນຄ້າທົ່ວໄປ">ສິນຄ້າທົ່ວໄປ</option></select><input type="text" id="productName" placeholder="ຊື່ສິນຄ້າ"><input type="text" id="price" placeholder="ລາຄາ"><textarea id="description" rows="2" placeholder="ລາຍລະອຽດ"></textarea><input type="text" id="phone" placeholder="ເບີໂທຕິດຕໍ່"><input type="file" id="productImage" accept="image/*"><button id="publishBtn">ລົງຂາຍ</button></div></div>
+    
+    <div id="buyPanel"><div id="productList" class="product-list"></div></div>
+    
+    <div id="profilePanel" class="hidden"><div class="profile-form"><h3>ແກ້ໄຂໂປຣຟາຍ</h3><input type="text" id="displayName" placeholder="ຊື່ຜູ້ໃຊ້"><input type="file" id="profileImage" accept="image/*"><button id="updateProfileBtn">ອັບເດດໂປຣຟາຍ</button><button id="logoutBtn" class="logout-btn">ອອກຈາກລະບົບ</button></div></div>
+</div>
+
+<script type="importmap">
+    {
+        "imports": {
+            "firebase/app": "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js",
+            "firebase/firestore": "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js",
+            "firebase/storage": "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js"
+        }
+    }
+</script>
+
+<script type="module">
+    import { initializeApp } from "firebase/app";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc } from "firebase/firestore";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyC8CF6_S0EsRFDt99Uhy7ycl35MBfgJfds",
+        authDomain: "sabai-jai-app.firebaseapp.com",
+        projectId: "sabai-jai-app",
+        storageBucket: "sabai-jai-app.firebasestorage.app",
+        messagingSenderId: "998120600338",
+        appId: "1:998120600338:web:d809f6630335c09443f9cb",
+        measurementId: "G-XY8X97HJ5L"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+    const provider = new GoogleAuthProvider();
+
+    let currentUser = null;
+    let products = [];
+
+    const authSection = document.getElementById('authSection');
+    const appContent = document.getElementById('appContent');
+    const userInfoDiv = document.getElementById('userInfo');
+    const productListDiv = document.getElementById('productList');
+    
+    function renderUserInfo() {
+        if(!currentUser) return;
+        userInfoDiv.innerHTML = `<img src="${currentUser.photoURL || 'https://via.placeholder.com/50'}" class="profile-pic"><span class="user-name">${currentUser.displayName || currentUser.email}</span>`;
+    }
+    
+    async function loadProducts() {
+        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+        products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderProducts();
+    }
+    
+    function renderProducts() {
+        const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
+        let filtered = products.filter(p => p.name.toLowerCase().includes(search) || p.category.toLowerCase().includes(search));
+        if(filtered.length === 0) { productListDiv.innerHTML = '<div class="empty-msg">ຍັງບໍ່ມີສິນຄ້າ</div>'; return; }
+        productListDiv.innerHTML = filtered.map(p => `<div class="product-card"><div class="product-title">${p.name}</div><div class="product-category">${p.category}</div><div class="product-price">💰 ${p.price}</div><div class="product-desc">${p.desc}</div><div class="product-contact">📞 ຕິດຕໍ່: ${p.phone}</div>${p.imageUrl ? `<img src="${p.imageUrl}" style="max-width:100%; border-radius:12px; margin-top:8px;">` : ''}${currentUser?.uid === p.userId ? `<button class="delete-btn" data-id="${p.id}">❌ ລຶບ</button>` : ''}</div>`).join('');
+        document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', async (e) => { await deleteDoc(doc(db, "products", btn.dataset.id)); loadProducts(); }));
+    }
+    
+    document.getElementById('searchBtn').addEventListener('click', renderProducts);
+    document.getElementById('publishBtn')?.addEventListener('click', async () => {
+        const name = document.getElementById('productName').value, price = document.getElementById('price').value, desc = document.getElementById('description').value, phone = document.getElementById('phone').value, category = document.getElementById('category').value;
+        if(!name || !price || !phone) return alert('ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບ');
+        let imageUrl = '';
+        const file = document.getElementById('productImage').files[0];
+        if(file) { const storageRef = ref(storage, `products/${Date.now()}_${file.name}`); await uploadBytes(storageRef, file); imageUrl = await getDownloadURL(storageRef); }
+        await addDoc(collection(db, "products"), { name, price, desc, phone, category, imageUrl, userId: currentUser.uid, userEmail: currentUser.email, createdAt: Date.now() });
+        alert('ໂພສສຳເລັດ');
+        loadProducts();
+    });
+    
+    document.getElementById('updateProfileBtn')?.addEventListener('click', async () => {
+        const newName = document.getElementById('displayName').value;
+        if(newName) await updateProfile(currentUser, { displayName: newName });
+        const file = document.getElementById('profileImage').files[0];
+        if(file) { const storageRef = ref(storage, `profiles/${currentUser.uid}`); await uploadBytes(storageRef, file); const url = await getDownloadURL(storageRef); await updateProfile(currentUser, { photoURL: url }); }
+        alert('ອັບເດດສຳເລັດ');
+        renderUserInfo();
+    });
+    
+    document.getElementById('logoutBtn')?.addEventListener('click', async () => { await signOut(auth); });
+    
+    document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('sellPanel').classList.add('hidden');
+        document.getElementById('buyPanel').classList.add('hidden');
+        document.getElementById('profilePanel').classList.add('hidden');
+        if(tab.dataset.tab === 'buy') document.getElementById('buyPanel').classList.remove('hidden');
+        if(tab.dataset.tab === 'sell') document.getElementById('sellPanel').classList.remove('hidden');
+        if(tab.dataset.tab === 'profile') document.getElementById('profilePanel').classList.remove('hidden');
+    }));
+    
+    onAuthStateChanged(auth, (user) => {
+        currentUser = user;
+        if(user) { authSection.classList.add('hidden'); appContent.classList.remove('hidden'); renderUserInfo(); loadProducts(); }
+        else { authSection.classList.remove('hidden'); appContent.classList.add('hidden'); }
+    });
+    
+    window.login = () => { const email = document.getElementById('email').value, password = document.getElementById('password').value; signInWithEmailAndPassword(auth, email, password).catch(e => alert(e.message)); };
+    window.register = () => { const email = document.getElementById('email').value, password = document.getElementById('password').value; createUserWithEmailAndPassword(auth, email, password).catch(e => alert(e.message)); };
+    window.googleLogin = () => { signInWithPopup(auth, provider).catch(e => alert(e.message)); };
+    document.getElementById('loginBtn').onclick = window.login;
+    document.getElementById('registerBtn').onclick = window.register;
+    document.getElementById('googleBtn').onclick = window.googleLogin;
+</script>
+</body>
 </html>
